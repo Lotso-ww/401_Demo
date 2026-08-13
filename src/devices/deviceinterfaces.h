@@ -8,7 +8,7 @@ class IRfidService : public QObject {
 public:
     using QObject::QObject;
     virtual void initialize() = 0;
-    virtual void recognize(RfidScenario scenario) = 0;
+    virtual void recognize() = 0;
     virtual void cancel() = 0;
 signals:
     void stateChanged(DeviceState state, const QString &message);

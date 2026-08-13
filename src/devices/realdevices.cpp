@@ -105,7 +105,7 @@ void RealRfidService::initialize()
 #endif
 }
 
-void RealRfidService::recognize(RfidScenario)
+void RealRfidService::recognize()
 {
 #ifdef TLS401_HAS_RFID_SDK
     if (!m_ready || !m_reader) { emit stateChanged(DeviceState::Error, QStringLiteral("RFID reader is not ready.")); return; }

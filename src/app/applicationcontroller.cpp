@@ -1,27 +1,18 @@
-﻿#include "applicationcontroller.h"
-#include "devices/mockdevices.h"
+#include "applicationcontroller.h"
 #include "devices/realdevices.h"
 #include "storage/database.h"
 #include "storage/repository.h"
 #include "storage/imagefilestore.h"
 
 #include <QDir>
-#include <QProcessEnvironment>
 #include <QStandardPaths>
 #include <QTimer>
 
 ApplicationController::ApplicationController(QObject *parent)
     : QObject(parent), m_sessions(this), m_workflow(&m_sessions, this), m_rfid(nullptr), m_camera(nullptr)
 {
-    const QString backend = QProcessEnvironment::systemEnvironment().value(QString::fromUtf8("TLS401_DEVICE_BACKEND"));
-    const bool useMock = backend.compare(QString::fromUtf8("mock"), Qt::CaseInsensitive) == 0;
-    if (useMock) {
-        m_rfid = new MockRfidService(this);
-        m_camera = new MockCameraService(this);
-    } else {
-        m_rfid = new RealRfidService(this);
-        m_camera = new RealCameraService(this);
-    }
+    m_rfid = new RealRfidService(this);
+    m_camera = new RealCameraService(this);
 
     const QString root = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir().mkpath(root);
@@ -104,16 +95,16 @@ ApplicationController::~ApplicationController()
     delete m_database;
 }
 
-void ApplicationController::identify(RfidScenario scenario)
+void ApplicationController::identify()
 {
     if (!m_sessions.selectedChamber()) {
         emit message(QString::fromUtf8("\xE8\xAF\xB7\xE5\x85\x88\xE9\x80\x89\xE6\x8B\xA9\xE8\x88\xB1\xE5\xAE\xA4"), true);
         return;
     }
-    m_rfid->recognize(scenario);
+    m_rfid->recognize();
 }
 
-void ApplicationController::identifyAll(RfidScenario scenario)
+void ApplicationController::identifyAll()
 {
     if (sequenceActive()) {
         emit message(QString::fromUtf8("\xE8\xAF\x86\xE5\x88\xAB\xE6\x88\x96\xE6\x8B\x8D\xE7\x85\xA7\xE9\x98\x9F\xE5\x88\x97\xE6\xAD\xA3\xE5\x9C\xA8\xE8\xBF\x90\xE8\xA1\x8C"), true);
@@ -121,7 +112,7 @@ void ApplicationController::identifyAll(RfidScenario scenario)
     }
     m_sequenceChambers = {4, 3, 2, 1};
     m_sequenceIndex = 0;
-    m_sequenceScenario = scenario;
+
     m_sequenceMode = SequenceMode::Identifying;
     m_sequenceStatus = QString::fromUtf8("\xE6\xAD\xA3\xE5\x9C\xA8\xE6\x8C\x89 4 \xE2\x86\x92 3 \xE2\x86\x92 2 \xE2\x86\x92 1 \xE8\xAF\x86\xE5\x88\xAB\xE8\x88\xB1\xE5\xAE\xA4");
     emit stateChanged();
@@ -137,7 +128,7 @@ void ApplicationController::identifyNext()
         return;
     }
     m_sessions.selectChamber(m_sequenceChambers.at(m_sequenceIndex));
-    m_rfid->recognize(m_sequenceScenario);
+    m_rfid->recognize();
 }
 
 void ApplicationController::startCaptureSequence()

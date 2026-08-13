@@ -14,7 +14,7 @@ public:
     using IRfidService::IRfidService;
     ~RealRfidService() override;
     void initialize() override;
-    void recognize(RfidScenario scenario) override;
+    void recognize() override;
     void cancel() override;
 private:
     QPointer<QThread> m_thread;

@@ -30,9 +30,8 @@ add_executable(tls401_demo
     src/main.cpp
     src/domain/models.h
     src/devices/deviceinterfaces.h
-    src/devices/mockdevices.h
-    src/devices/mockdevices.cpp
-    src/app/workflowservices.h
+
+src/app/workflowservices.h
     src/app/workflowservices.cpp
     src/app/applicationcontroller.h
     src/app/applicationcontroller.cpp
@@ -114,9 +113,8 @@ if(BUILD_TESTING)
         tests/tst_workflow.cpp
         src/domain/models.h
         src/devices/deviceinterfaces.h
-        src/devices/mockdevices.h
-        src/devices/mockdevices.cpp
-        src/app/workflowservices.h
+
+src/app/workflowservices.h
         src/app/workflowservices.cpp
         src/app/applicationcontroller.h
         src/app/applicationcontroller.cpp

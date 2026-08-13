@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 #include <QButtonGroup>
@@ -168,7 +168,7 @@ QWidget *MainWindow::buildHomePage()
     auto *identify = button(QString::fromUtf8("\xE5\xBC\x80\xE5\xA7\x8B\xE8\xAF\x86\xE5\x88\xAB"), true);
     auto *captureAll = button(QString::fromUtf8("\xE5\xBC\x80\xE5\xA7\x8B\xE6\x8B\x8D\xE7\x85\xA7"), true);
     auto *clear = button(QString::fromUtf8("\xE6\xB8\x85\xE9\x99\xA4\xE5\xBD\x93\xE5\x89\x8D\xE7\xBB\x91\xE5\xAE\x9A"));
-    connect(identify, &QPushButton::clicked, this, [this] { m_controller->identifyAll(RfidScenario::Success); });
+    connect(identify, &QPushButton::clicked, this, [this] { m_controller->identifyAll(); });
     connect(captureAll, &QPushButton::clicked, this, [this] { m_controller->startCaptureSequence(); });
     connect(clear, &QPushButton::clicked, this, [this] { m_controller->sessions()->clearSelected(); });
     actions->addWidget(identify);

@@ -17,8 +17,8 @@ public:
     DeviceState rfidState() const { return m_rfidState; }
     DeviceState cameraState() const { return m_cameraState; }
     bool databaseReady() const { return m_databaseReady; }
-    void identify(RfidScenario scenario);
-    void identifyAll(RfidScenario scenario = RfidScenario::Success);
+    void identify();
+    void identifyAll();
     void startCaptureSequence();
     bool sequenceActive() const { return m_sequenceMode != SequenceMode::None; }
     QString sequenceStatus() const { return m_sequenceStatus; }
@@ -43,7 +43,7 @@ private:
     class ImageFileStore *m_imageStore = nullptr;
     QVector<int> m_sequenceChambers;
     int m_sequenceIndex = 0;
-    RfidScenario m_sequenceScenario = RfidScenario::Success;
+
     SequenceMode m_sequenceMode = SequenceMode::None;
     bool m_captureRetake = false;
     QString m_sequenceStatus;

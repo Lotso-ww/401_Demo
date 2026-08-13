@@ -8,7 +8,7 @@
 #include <optional>
 
 enum class DeviceState { Offline, Ready, Busy, Error };
-enum class RfidScenario { Success, NoTag, InvalidPayload, DuplicateUid };
+
 enum class RfidError { None, NoTag, InvalidPayload, DuplicateUid, Cancelled };
 enum class WellState { Empty, Current, Complete, RetakeRequired };
 
