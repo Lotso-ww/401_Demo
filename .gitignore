@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# CMake and Qt Creator build output
+/build/
+/out/
+cmake-build-*/
+*.user

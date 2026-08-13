@@ -1,0 +1,23 @@
+QMainWindow { background: #f3f6f7; color: #1e3038; }
+QWidget { font-family: "Microsoft YaHei"; font-size: 13px; }
+QFrame#topBar, QFrame#sidePanel { background: #12323a; color: #f4fbfb; }
+QLabel#pageTitle { font-size: 20px; font-weight: 600; color: #f4fbfb; }
+QPushButton { background: #e8eff0; border: 1px solid #b8c9cc; border-radius: 4px; padding: 7px 11px; min-height: 20px; }
+QPushButton:hover { background: #d8e8e9; }
+QPushButton:checked, QPushButton#primary { background: #15757d; border-color: #15757d; color: white; }
+QFrame#chamberCard { background: white; border: 1px solid #bdced1; border-radius: 4px; }
+QPushButton#chamberSelect { background: #315158; border: 0; color: white; font-size: 16px; font-weight: 600; min-width: 72px; }
+QPushButton#chamberSelect:checked { background: #15757d; border: 2px solid #0f6168; }
+QLabel#chamberState { color: #61747a; font-weight: 600; }
+QLabel#chamberDetails { color: #33484e; }
+QPushButton#homeWell { background: #d9e1e2; border: 1px solid #b3c3c5; border-radius: 3px; padding: 0; min-width: 0; color: #41545a; }
+QPushButton#homeWell[captureState="complete"] { background: #75939a; color: white; }
+QPushButton#homeWell[captureState="current"] { background: #2f9c65; border: 2px solid #125e38; color: white; font-weight: 700; }
+QGroupBox { border: 1px solid #c8d4d6; border-radius: 5px; margin-top: 12px; padding: 10px; font-weight: 600; background: white; }
+QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 4px; }
+QLabel#statusReady { color: #1f7560; font-weight: 600; }
+QLabel#statusBusy { color: #a86513; font-weight: 600; }
+QLabel#statusError { color: #b13c42; font-weight: 600; }
+QLabel#sectionTitle { font-size: 19px; font-weight: 600; }
+QLabel#mutedText { color: #61747a; }
+QFrame#homeActions { background: #e7eef0; border: 1px solid #bdced1; border-radius: 4px; }
