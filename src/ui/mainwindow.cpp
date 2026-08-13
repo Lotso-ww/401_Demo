@@ -18,6 +18,7 @@
 #include <QStyle>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QSpinBox>
 
 namespace {
 QLabel *label(const QString &text = {})
@@ -56,13 +57,6 @@ MainWindow::MainWindow(ApplicationController *controller, QWidget *parent)
     connect(m_controller->sessions(), &ChamberSessionService::changed, this, &MainWindow::refreshAll);
     connect(m_controller->workflow(), &CaptureWorkflowService::changed, this, &MainWindow::refreshAll);
     connect(m_controller->camera(), &ICameraService::previewFrame, this, &MainWindow::updatePreview);
-    connect(m_controller->camera(), &ICameraService::captured, this, [this](const QImage &image) {
-        QString error;
-        if (!m_controller->workflow()->acceptCapture(image, m_retake, m_controller->camera()->exposure(), m_controller->camera()->gain(), &error))
-            showMessage(error, true);
-        m_retake = false;
-        refreshAll();
-    });
 
     m_playTimer = new QTimer(this);
     m_playTimer->setInterval(500);
@@ -80,7 +74,6 @@ MainWindow::MainWindow(ApplicationController *controller, QWidget *parent)
         if (model && !model->rounds.isEmpty())
             setDishRoundIndex((m_dishRoundIndex + 1) % model->rounds.size());
     });
-    m_controller->camera()->startPreview();
     refreshAll();
 }
 
@@ -151,7 +144,11 @@ QWidget *MainWindow::buildHomePage()
             wellButton->setFixedHeight(24);
             connect(wellButton, &QPushButton::clicked, this, [this, chamberNo] {
                 m_controller->sessions()->selectChamber(chamberNo);
-                showPage(1);
+                const auto *model = m_controller->sessions()->selectedModel();
+                if (model && model->profile)
+                    showPage(1);
+                else
+                    showMessage(QString::fromUtf8("\xE8\xAF\xA5\xE8\x88\xB1\xE5\xAE\xA4\xE5\xB0\x9A\xE6\x9C\xAA\xE8\xAF\x86\xE5\x88\xAB\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBF"), true);
             });
             card.wells.push_back(wellButton);
             wellGrid->addWidget(wellButton, (well - 1) / 8, (well - 1) % 8);
@@ -168,20 +165,14 @@ QWidget *MainWindow::buildHomePage()
     auto *actionsFrame = new QFrame;
     actionsFrame->setObjectName(QString::fromUtf8("homeActions"));
     auto *actions = new QHBoxLayout(actionsFrame);
-    auto *identify = button(QString::fromUtf8("\xE8\xAF\x86\xE5\x88\xAB\xE8\x8A\xAF\xE7\x89\x87"), true);
-    auto *enter = button(QString::fromUtf8("\xE8\xBF\x9B\xE5\x85\xA5\xE7\x9A\xBF\xE8\xAF\xA6\xE6\x83\x85"), true);
+    auto *identify = button(QString::fromUtf8("\xE5\xBC\x80\xE5\xA7\x8B\xE8\xAF\x86\xE5\x88\xAB"), true);
+    auto *captureAll = button(QString::fromUtf8("\xE5\xBC\x80\xE5\xA7\x8B\xE6\x8B\x8D\xE7\x85\xA7"), true);
     auto *clear = button(QString::fromUtf8("\xE6\xB8\x85\xE9\x99\xA4\xE5\xBD\x93\xE5\x89\x8D\xE7\xBB\x91\xE5\xAE\x9A"));
-    connect(identify, &QPushButton::clicked, this, [this] { m_controller->identify(RfidScenario::Success); });
-    connect(enter, &QPushButton::clicked, this, [this] {
-        const auto *model = m_controller->sessions()->selectedModel();
-        if (!model || !model->profile)
-            showMessage(QString::fromUtf8("\xE8\xAF\xB7\xE5\x85\x88\xE9\x80\x89\xE6\x8B\xA9\xE5\xB9\xB6\xE8\xAF\x86\xE5\x88\xAB\xE4\xB8\x80\xE4\xB8\xAA\xE8\x88\xB1\xE5\xAE\xA4\xE3\x80\x82"), true);
-        else
-            showPage(1);
-    });
+    connect(identify, &QPushButton::clicked, this, [this] { m_controller->identifyAll(RfidScenario::Success); });
+    connect(captureAll, &QPushButton::clicked, this, [this] { m_controller->startCaptureSequence(); });
     connect(clear, &QPushButton::clicked, this, [this] { m_controller->sessions()->clearSelected(); });
     actions->addWidget(identify);
-    actions->addWidget(enter);
+    actions->addWidget(captureAll);
     actions->addWidget(clear);
     actions->addStretch();
     layout->addWidget(actionsFrame);
@@ -214,15 +205,7 @@ QWidget *MainWindow::buildDishPage()
     infoLayout->addWidget(m_dishInfo);
     main->addWidget(infoBox);
     auto *body = new QHBoxLayout;
-    auto *previewBox = new QGroupBox(QString::fromUtf8("\xE5\xAE\x9E\xE6\x97\xB6\xE9\xA2\x84\xE8\xA7\x88"));
-    auto *previewLayout = new QVBoxLayout(previewBox);
-    m_preview = label(QString::fromUtf8("\xE7\xAD\x89\xE5\xBE\x85\xE7\x9B\xB8\xE6\x9C\xBA\xE9\xA2\x84\xE8\xA7\x88\xE7\x94\xBB\xE9\x9D\xA2"));
-    m_preview->setMinimumSize(420, 280);
-    m_preview->setAlignment(Qt::AlignCenter);
-    m_preview->setStyleSheet(QString::fromUtf8("background: #15242c; color: #d6e5e6;"));
-    previewLayout->addWidget(m_preview);
-    body->addWidget(previewBox, 2);
-    auto *wellBox = new QGroupBox(QString::fromUtf8("\xE6\x9C\xAC\xE8\xBD\xAE 16 \xE5\xAD\x94\xE5\x9B\xBE\xE5\x83\x8F\xE9\xA2\x84\xE8\xA7\x88"));
+    auto *wellBox = new QGroupBox(QString::fromUtf8("16 \xE5\xAD\x94\xE6\x9C\x80\xE6\x96\xB0\xE5\x9B\xBE\xE5\x83\x8F\xE9\xA2\x84\xE8\xA7\x88"));
     auto *wellLayout = new QGridLayout(wellBox);
     wellLayout->setSpacing(5);
     m_wellGroup = new QButtonGroup(this);
@@ -233,7 +216,7 @@ QWidget *MainWindow::buildDishPage()
         m_wellButtons.push_back(item);
         m_wellGroup->addButton(item, i);
         wellLayout->addWidget(item, (i - 1) / 4, (i - 1) % 4);
-        connect(item, &QPushButton::clicked, this, [this, i] { m_controller->workflow()->selectWell(i); });
+        connect(item, &QPushButton::clicked, this, [this, i] { m_detailWell = i; m_historyIndex = 0; showPage(2); });
     }
     body->addWidget(wellBox, 1);
     main->addLayout(body, 1);
@@ -261,34 +244,8 @@ QWidget *MainWindow::buildDishPage()
 
     auto *tools = new QHBoxLayout;
     auto *back = button(QString::fromUtf8("\xE8\xBF\x94\xE5\x9B\x9E\xE9\xA6\x96\xE9\xA1\xB5"));
-    auto *create = button(QString::fromUtf8("\xE6\x96\xB0\xE5\xBB\xBA\xE8\xBD\xAE\xE6\xAC\xA1"), true);
-    auto *capture = button(QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7"), true);
-    auto *retake = button(QString::fromUtf8("\xE9\x87\x8D\xE6\x8B\x8D"));
-    auto *finish = button(QString::fromUtf8("\xE7\xBB\x93\xE6\x9D\x9F\xE8\xBD\xAE\xE6\xAC\xA1"));
-    auto *openWell = button(QString::fromUtf8("\xE5\xAD\x94\xE8\xAF\xA6\xE6\x83\x85"));
-    m_exposure = new QDoubleSpinBox;
-    m_exposure->setRange(1, 10000000);
-    m_exposure->setDecimals(0);
-    m_exposure->setSuffix(QString::fromUtf8(" us"));
-    m_exposure->setValue(m_controller->camera()->exposure());
-    m_gain = new QDoubleSpinBox;
-    m_gain->setRange(0, 100);
-    m_gain->setDecimals(2);
-    m_gain->setSuffix(QString::fromUtf8(" dB"));
-    m_gain->setValue(m_controller->camera()->gain());
     connect(back, &QPushButton::clicked, this, [this] { showPage(0); });
-    connect(create, &QPushButton::clicked, this, [this] { QString error; if (!m_controller->workflow()->createRound(&error)) showMessage(error, true); });
-    connect(capture, &QPushButton::clicked, this, [this] { if (!m_controller->workflow()->hasActiveRound()) { showMessage(QString::fromUtf8("\xE8\xAF\xB7\xE5\x85\x88\xE6\x96\xB0\xE5\xBB\xBA\xE9\x87\x87\xE9\x9B\x86\xE8\xBD\xAE\xE6\xAC\xA1\xE3\x80\x82"), true); return; } m_retake = false; m_controller->camera()->capture(); });
-    connect(retake, &QPushButton::clicked, this, [this] { if (!m_controller->workflow()->hasActiveRound()) { showMessage(QString::fromUtf8("\xE8\xAF\xB7\xE5\x85\x88\xE6\x96\xB0\xE5\xBB\xBA\xE9\x87\x87\xE9\x9B\x86\xE8\xBD\xAE\xE6\xAC\xA1\xE3\x80\x82"), true); return; } m_retake = true; m_controller->camera()->capture(); });
-    connect(finish, &QPushButton::clicked, this, [this] { m_controller->workflow()->finishRound(); });
-    connect(openWell, &QPushButton::clicked, this, [this] { m_detailWell = m_controller->workflow()->currentWell(); m_historyIndex = 0; showPage(2); });
-    connect(m_exposure, &QDoubleSpinBox::editingFinished, this, [this] { m_controller->camera()->setExposure(m_exposure->value()); m_exposure->setValue(m_controller->camera()->exposure()); });
-    connect(m_gain, &QDoubleSpinBox::editingFinished, this, [this] { m_controller->camera()->setGain(m_gain->value()); m_gain->setValue(m_controller->camera()->gain()); });
-    for (auto *item : {back, create, capture, retake, finish, openWell}) tools->addWidget(item);
-    tools->addWidget(label(QString::fromUtf8("\xE6\x9B\x9D\xE5\x85\x89")));
-    tools->addWidget(m_exposure);
-    tools->addWidget(label(QString::fromUtf8("\xE5\xA2\x9E\xE7\x9B\x8A")));
-    tools->addWidget(m_gain);
+    tools->addWidget(back);
     tools->addStretch();
     main->addLayout(tools);
     layout->addLayout(main, 1);
@@ -314,13 +271,24 @@ QWidget *MainWindow::buildWellPage()
     }
     layout->addWidget(wellSelector, 130);
     auto *main = new QVBoxLayout;
+    auto *modeBar = new QHBoxLayout;
+    m_browseMode = button(QString::fromUtf8("\xE8\x83\x9A\xE8\x83\x8E\xE6\xB5\x8F\xE8\xA7\x88"), true);
+    m_calibrationMode = button(QString::fromUtf8("\xE4\xBD\x8D\xE7\xBD\xAE\xE6\xA0\xA1\xE5\x87\x86"));
+    modeBar->addWidget(m_browseMode);
+    modeBar->addWidget(m_calibrationMode);
+    modeBar->addStretch();
+    main->addLayout(modeBar);
+    m_wellModes = new QStackedWidget;
     m_wellInfo = label();
     main->addWidget(m_wellInfo);
     m_wellImage = label(QString::fromUtf8("\xE8\xAF\xA5\xE5\xAD\x94\xE6\x9A\x82\xE6\x97\xA0\xE5\x8E\x86\xE5\x8F\xB2\xE5\x9B\xBE\xE5\x83\x8F"));
     m_wellImage->setMinimumSize(720, 440);
     m_wellImage->setAlignment(Qt::AlignCenter);
     m_wellImage->setStyleSheet(QString::fromUtf8("background: #15242c; color: #d6e5e6;"));
-    main->addWidget(m_wellImage, 1);
+    auto *browsePage = new QWidget;
+    auto *browseLayout = new QVBoxLayout(browsePage);
+    browseLayout->setContentsMargins(0, 0, 0, 0);
+    browseLayout->addWidget(m_wellImage, 1);
     auto *controls = new QHBoxLayout;
     auto *back = button(QString::fromUtf8("\xE8\xBF\x94\xE5\x9B\x9E\xE7\x9A\xBF\xE8\xAF\xA6\xE6\x83\x85"));
     auto *previous = button(QString::fromUtf8("\xE4\xB8\x8A\xE4\xB8\x80\xE8\xBD\xAE"));
@@ -340,7 +308,40 @@ QWidget *MainWindow::buildWellPage()
     controls->addWidget(label(QString::fromUtf8("\xE9\x80\x9F\xE5\xBA\xA6")));
     controls->addWidget(speed);
     controls->addStretch();
-    main->addLayout(controls);
+    browseLayout->addLayout(controls);
+    m_wellModes->addWidget(browsePage);
+
+    auto *calibrationPage = new QWidget;
+    auto *calibrationLayout = new QHBoxLayout(calibrationPage);
+    m_calibrationPreview = label(QString::fromUtf8("\xE7\xAD\x89\xE5\xBE\x85 CCD \xE5\xAE\x9E\xE6\x97\xB6\xE7\x94\xBB\xE9\x9D\xA2"));
+    m_calibrationPreview->setObjectName(QString::fromUtf8("calibrationPreview"));
+    m_calibrationPreview->setMinimumSize(720, 440);
+    m_calibrationPreview->setAlignment(Qt::AlignCenter);
+    m_calibrationPreview->setStyleSheet(QString::fromUtf8("background: #15242c; color: #d6e5e6;"));
+    calibrationLayout->addWidget(m_calibrationPreview, 1);
+    auto *calibrationControls = new QGridLayout;
+    const QStringList axes = {QString::fromUtf8("X\xE8\xBD\xB4"), QString::fromUtf8("Y\xE8\xBD\xB4"), QString::fromUtf8("Z\xE8\xBD\xB4"), QString::fromUtf8("L\xE8\xBD\xB4"), QString::fromUtf8("\xE6\x9B\x9D\xE5\x85\x89\xE6\x97\xB6\xE9\x97\xB4")};
+    for (int row = 0; row < axes.size(); ++row) {
+        calibrationControls->addWidget(label(axes.at(row)), row, 0);
+        auto *minus = button(QString::fromUtf8("<"));
+        auto *value = new QSpinBox;
+        value->setRange(-1000000, 1000000);
+        value->setValue(row == 4 ? static_cast<int>(m_controller->camera()->exposure()) : 0);
+        auto *plus = button(QString::fromUtf8(">"));
+        calibrationControls->addWidget(minus, row, 1);
+        calibrationControls->addWidget(value, row, 2);
+        calibrationControls->addWidget(plus, row, 3);
+        connect(minus, &QPushButton::clicked, this, [value] { value->stepDown(); });
+        connect(plus, &QPushButton::clicked, this, [value] { value->stepUp(); });
+    }
+    calibrationControls->addWidget(label(QString::fromUtf8("\xE5\xB9\x85\xE5\xBA\xA6\xEF\xBC\x9A")
+        + QString::fromUtf8("1 / 2 / 5 / 10 / 20 / 50 / 100 um")), axes.size(), 0, 1, 4);
+    calibrationControls->addWidget(label(QString::fromUtf8("\xE5\xBD\x93\xE5\x89\x8D\xE4\xB8\xBA\xE7\x95\x8C\xE9\x9D\xA2\xE9\xA2\x84\xE8\xA7\x88\xEF\xBC\x8CXYZL \xE8\xBF\x90\xE5\x8A\xA8\xE9\x9C\x80\xE6\x8E\xA5\xE5\x85\xA5\xE8\xBF\x90\xE5\x8A\xA8\xE5\xB9\xB3\xE5\x8F\xB0")), axes.size() + 1, 0, 1, 4);
+    calibrationLayout->addLayout(calibrationControls);
+    m_wellModes->addWidget(calibrationPage);
+    main->addWidget(m_wellModes, 1);
+    connect(m_browseMode, &QPushButton::clicked, this, [this] { m_wellModes->setCurrentIndex(0); m_playTimer->stop(); m_controller->camera()->stopPreview(); });
+    connect(m_calibrationMode, &QPushButton::clicked, this, [this] { m_wellModes->setCurrentIndex(1); m_controller->camera()->startPreview(); });
     layout->addLayout(main, 1);
     return page;
 }
@@ -367,7 +368,7 @@ QString MainWindow::chamberSummary(const ChamberModel &chamber) const
     if (!chamber.profile)
         return QString::fromUtf8("\xE6\x9C\xAA\xE7\xBB\x91\xE5\xAE\x9A\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBF");
     const auto &profile = *chamber.profile;
-    return QString::fromUtf8("\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBF\xEF\xBC\x9A%1  |  \xE5\xA5\xB3\xE6\x96\xB9\xEF\xBC\x9A%2  |  \xE7\x97\x85\xE5\x8E\x86\xE5\x8F\xB7\xEF\xBC\x9A%3\x5Cn\xE5\x8F\x91\xE8\x82\xB2\xEF\xBC\x9A%4 \xE5\xA4\xA9  |  \xE5\xB7\xB2\xE9\x87\x87\xE9\x9B\x86 %5 \xE8\xBD\xAE")
+    return QString::fromUtf8("\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBF\xEF\xBC\x9A%1  |  \xE5\xA5\xB3\xE6\x96\xB9\xEF\xBC\x9A%2  |  \xE7\x97\x85\xE5\x8E\x86\xE5\x8F\xB7\xEF\xBC\x9A%3\n\xE5\x8F\x91\xE8\x82\xB2\xEF\xBC\x9A%4 \xE5\xA4\xA9  |  \xE5\xB7\xB2\xE9\x87\x87\xE9\x9B\x86 %5 \xE8\xBD\xAE")
         .arg(profile.dishNumber, profile.femaleName, profile.medicalRecordNumber)
         .arg(developmentDays(profile))
         .arg(chamber.rounds.size());
@@ -448,8 +449,11 @@ void MainWindow::refreshHome()
             item->style()->polish(item);
         }
     }
-    m_status->setText(QString::fromUtf8("RFID: %1   CCD: %2   \xE6\x95\xB0\xE6\x8D\xAE\xE5\xBA\x93: %3   |   \xE6\x8B\x8D\xE6\x91\x84\xE9\xA1\xBA\xE5\xBA\x8F: 4 \xE2\x86\x92 3 \xE2\x86\x92 2 \xE2\x86\x92 1")
-        .arg(stateText(m_controller->rfidState()), stateText(m_controller->cameraState()), m_controller->databaseReady() ? QString::fromUtf8("\xE5\xB0\xB1\xE7\xBB\xAA") : QString::fromUtf8("\xE5\xBC\x82\xE5\xB8\xB8")));
+    QString status = QString::fromUtf8("RFID: %1   CCD: %2   \xE6\x95\xB0\xE6\x8D\xAE\xE5\xBA\x93: %3   |   \xE6\x8B\x8D\xE6\x91\x84\xE9\xA1\xBA\xE5\xBA\x8F: 4 \xE2\x86\x92 3 \xE2\x86\x92 2 \xE2\x86\x92 1")
+        .arg(stateText(m_controller->rfidState()), stateText(m_controller->cameraState()), m_controller->databaseReady() ? QString::fromUtf8("\xE5\xB0\xB1\xE7\xBB\xAA") : QString::fromUtf8("\xE5\xBC\x82\xE5\xB8\xB8"));
+    if (m_controller->sequenceActive() && !m_controller->sequenceStatus().isEmpty())
+        status += QStringLiteral("  |  ") + m_controller->sequenceStatus();
+    m_status->setText(status);
 }
 
 void MainWindow::refreshDish()
@@ -462,7 +466,7 @@ void MainWindow::refreshDish()
         if (count && m_dishRoundIndex < 0) m_dishRoundIndex = count - 1;
     }
     m_dishInfo->setText(model && model->profile
-        ? QString::fromUtf8("%1\xE5\x8F\xB7\xE8\x88\xB1  |  \xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBF\xE5\xBA\x8F\xE5\x8F\xB7\xEF\xBC\x9A%2  |  \xE5\xA5\xB3\xE6\x96\xB9\xEF\xBC\x9A%3  |  \xE7\x94\xB7\xE6\x96\xB9\xEF\xBC\x9A%4  |  \xE7\x97\x85\xE5\x8E\x86\xE5\x8F\xB7\xEF\xBC\x9A%5\x5Cn\xE6\x8E\x88\xE7\xB2\xBE\xE6\x97\xB6\xE9\x97\xB4\xEF\xBC\x9A%6  |  \xE5\x8F\x91\xE8\x82\xB2\xE5\xA4\xA9\xE6\x95\xB0\xEF\xBC\x9A%7  |  \xE6\xA0\x87\xE7\xAD\xBE UID\xEF\xBC\x9A%8")
+        ? QString::fromUtf8("%1\xE5\x8F\xB7\xE8\x88\xB1  |  \xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBF\xE5\xBA\x8F\xE5\x8F\xB7\xEF\xBC\x9A%2  |  \xE5\xA5\xB3\xE6\x96\xB9\xEF\xBC\x9A%3  |  \xE7\x94\xB7\xE6\x96\xB9\xEF\xBC\x9A%4  |  \xE7\x97\x85\xE5\x8E\x86\xE5\x8F\xB7\xEF\xBC\x9A%5\n\xE6\x8E\x88\xE7\xB2\xBE\xE6\x97\xB6\xE9\x97\xB4\xEF\xBC\x9A%6  |  \xE5\x8F\x91\xE8\x82\xB2\xE5\xA4\xA9\xE6\x95\xB0\xEF\xBC\x9A%7  |  \xE6\xA0\x87\xE7\xAD\xBE UID\xEF\xBC\x9A%8")
             .arg(model->number).arg(model->profile->dishNumber, model->profile->femaleName, model->profile->maleName, model->profile->medicalRecordNumber, model->profile->inseminationTime.toString(QString::fromUtf8("yyyy-MM-dd HH:mm"))).arg(developmentDays(*model->profile)).arg(model->profile->uid)
         : QString::fromUtf8("\xE8\xAF\xB7\xE9\x80\x89\xE6\x8B\xA9\xE5\xB9\xB6\xE8\xAF\x86\xE5\x88\xAB\xE4\xB8\x80\xE4\xB8\xAA\xE8\x88\xB1\xE5\xAE\xA4\xE3\x80\x82"));
     for (int i = 0; i < m_chamberButtons.size(); ++i) {
@@ -474,7 +478,7 @@ void MainWindow::refreshDish()
     const auto *round = displayedDishRound();
     for (int i = 0; i < m_wellButtons.size(); ++i) {
         auto *item = m_wellButtons[i];
-        item->setText(QString::fromUtf8("%1\x5Cn%2").arg(i + 1).arg(wellStateText(states[i])));
+        item->setText(QString::number(i + 1) + QStringLiteral("\n") + wellStateText(states[i]));
         item->setChecked(i + 1 == m_controller->workflow()->currentWell());
         item->setIcon({});
         if (round && !round->history[i].isEmpty() && round->history[i].last().available) {
@@ -509,6 +513,13 @@ void MainWindow::refreshWell()
 void MainWindow::showPage(int index)
 {
     if (index != 1) m_dishPlayTimer->stop();
+    if (index != 2) {
+        m_controller->camera()->stopPreview();
+    } else if (m_wellModes) {
+        m_wellModes->setCurrentIndex(0);
+        m_playTimer->stop();
+        m_controller->camera()->stopPreview();
+    }
     m_pages->setCurrentIndex(index);
     m_title->setText(index == 0 ? QString::fromUtf8("TLS401 \xE8\x83\x9A\xE8\x83\x8E\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9B\x91\xE6\x8E\xA7") : index == 1 ? QString::fromUtf8("\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBF\xE8\xAF\xA6\xE6\x83\x85") : QString::fromUtf8("\xE5\x9F\xB9\xE5\x85\xBB\xE5\xAD\x94\xE8\xAF\xA6\xE6\x83\x85"));
     refreshAll();
@@ -522,6 +533,6 @@ void MainWindow::showMessage(const QString &text, bool error)
 
 void MainWindow::updatePreview(const QImage &image)
 {
-    if (m_preview)
-        m_preview->setPixmap(QPixmap::fromImage(image).scaled(m_preview->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
+    if (m_calibrationPreview)
+        m_calibrationPreview->setPixmap(QPixmap::fromImage(image).scaled(m_calibrationPreview->size(), Qt::KeepAspectRatio, Qt::FastTransformation));
 }

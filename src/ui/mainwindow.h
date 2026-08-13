@@ -10,11 +10,10 @@ QT_END_NAMESPACE
 class QButtonGroup;
 class QLabel;
 class QPushButton;
-class QStackedWidget;
 class QTimer;
-class QDoubleSpinBox;
 class QFrame;
 class QSlider;
+class QStackedWidget;
 
 struct ChamberCardView {
     QFrame *frame = nullptr;
@@ -52,24 +51,24 @@ private:
     QStackedWidget *m_pages = nullptr;
     QLabel *m_title = nullptr;
     QLabel *m_status = nullptr;
-    QLabel *m_preview = nullptr;
     QLabel *m_wellImage = nullptr;
     QLabel *m_dishInfo = nullptr;
     QLabel *m_wellInfo = nullptr;
+    QLabel *m_calibrationPreview = nullptr;
     QVector<QPushButton *> m_chamberButtons;
     QVector<ChamberCardView> m_homeCards;
     QVector<QPushButton *> m_wellButtons;
     QVector<QPushButton *> m_detailWellButtons;
     QButtonGroup *m_wellGroup = nullptr;
-    QDoubleSpinBox *m_exposure = nullptr;
-    QDoubleSpinBox *m_gain = nullptr;
     QLabel *m_dishRoundLabel = nullptr;
     QSlider *m_dishRoundSlider = nullptr;
     int m_detailWell = 1;
     int m_historyIndex = 0;
     int m_dishRoundIndex = -1;
     int m_playStep = 1;
-    bool m_retake = false;
     QTimer *m_playTimer = nullptr;
     QTimer *m_dishPlayTimer = nullptr;
+    QStackedWidget *m_wellModes = nullptr;
+    QPushButton *m_browseMode = nullptr;
+    QPushButton *m_calibrationMode = nullptr;
 };

@@ -101,7 +101,7 @@ void RealRfidService::initialize()
     if (RDR_Open(reinterpret_cast<LPCTSTR>(const_cast<ushort *>(conn.utf16())), &reader) != NO_ERR || !reader) { emit stateChanged(DeviceState::Error, QStringLiteral("RFID reader open failed.")); return; }
     m_reader = reader; m_ready = true; emit stateChanged(DeviceState::Ready, QStringLiteral("RFID reader connected."));
 #else
-    emit stateChanged(DeviceState::Error, QStringLiteral("RFID Win64 SDK is not configured."));
+    emit stateChanged(DeviceState::Error, QStringLiteral("RFID Win32 SDK is not configured."));
 #endif
 }
 
