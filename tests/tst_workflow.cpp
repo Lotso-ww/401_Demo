@@ -18,6 +18,8 @@ private slots:
     void rfidPayloadDecode();
     void retakePersistsReplacement();
     void partialRoundIsPersisted();
+    void partialRoundStagingIsRemoved();
+    void clearCaptureHistoryPreservesBindings();
     void captureParametersAndRoundSequencePersist();
     void restoredActiveRoundSelectsFirstPendingWell();
     void reidentificationRestoresHistoryInCurrentChamber();
@@ -47,7 +49,7 @@ void WorkflowTest::sqliteAndPngPersistence()
     profile.femaleName = QStringLiteral("Test");
     profile.medicalRecordNumber = QStringLiteral("MR-1");
     profile.identifiedAt = QDateTime::currentDateTime();
-    QVERIFY(sessions.bindProfile(profile, &error));
+    QVERIFY2(sessions.bindProfile(profile, &error), qPrintable(error));
     ImageFileStore files(dir.path());
     CaptureWorkflowService workflow(&sessions);
     workflow.setPersistence(&repository, &files);
@@ -57,7 +59,7 @@ void WorkflowTest::sqliteAndPngPersistence()
     for (int i = 0; i < 16; ++i)
         QVERIFY(workflow.acceptCapture(image, false, &error));
     QVERIFY(QDir(dir.path()).entryInfoList(QStringList() << QStringLiteral("*.sqlite"), QDir::Files).size() == 1);
-    QDirIterator images(dir.path(), QStringList() << QStringLiteral("*.png"), QDir::Files, QDirIterator::Subdirectories);
+    QDirIterator images(dir.path(), QStringList() << QStringLiteral("*.jpg"), QDir::Files, QDirIterator::Subdirectories);
     QVERIFY(images.hasNext());
 }
 
@@ -83,6 +85,87 @@ void WorkflowTest::retakePersistsReplacement()
 void WorkflowTest::partialRoundIsPersisted()
 {
     QTemporaryDir dir; QVERIFY(dir.isValid()); Database database; QString error; QVERIFY(database.open(dir.filePath("partial.sqlite"), &error)); Repository repository(database.connection()); ChamberSessionService sessions; sessions.setRepository(&repository); sessions.selectChamber(1); TagProfile p; p.uid="E004010203040508"; p.dishNumber="1"; p.inseminationTime=QDateTime::currentDateTime(); p.femaleName="Test"; p.medicalRecordNumber="MR-3"; p.identifiedAt=QDateTime::currentDateTime(); QVERIFY(sessions.bindProfile(p,&error)); CaptureWorkflowService workflow(&sessions); workflow.setPersistence(&repository,nullptr); QVERIFY(workflow.createRound(&error)); QVERIFY(!workflow.finishRound()); QSqlQuery q(database.connection()); QVERIFY(q.exec("SELECT COUNT(*) FROM capture_round")); QVERIFY(q.next()); QCOMPARE(q.value(0).toInt(), 0);
+}
+
+void WorkflowTest::partialRoundStagingIsRemoved()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+    Database database;
+    QString error;
+    QVERIFY(database.open(dir.filePath(QStringLiteral("staging.sqlite")), &error));
+    Repository repository(database.connection());
+    ChamberSessionService sessions;
+    sessions.setRepository(&repository);
+    sessions.selectChamber(1);
+    TagProfile profile;
+    profile.uid = QStringLiteral("E004010203040512");
+    profile.dishNumber = QStringLiteral("1");
+    profile.inseminationTime = QDateTime::currentDateTime();
+    profile.femaleName = QStringLiteral("StagingTest");
+    profile.medicalRecordNumber = QStringLiteral("ST-1");
+    profile.identifiedAt = QDateTime::currentDateTime();
+    QVERIFY2(sessions.bindProfile(profile, &error), qPrintable(error));
+    ImageFileStore files(dir.path());
+    CaptureWorkflowService workflow(&sessions);
+    workflow.setPersistence(&repository, &files);
+    QVERIFY(workflow.createRound(&error));
+    QImage image(32, 32, QImage::Format_RGB32);
+    image.fill(Qt::green);
+    QVERIFY(workflow.acceptCapture(image, false, &error));
+    QDirIterator staged(dir.path(), QStringList() << QStringLiteral("*.jpg"), QDir::Files, QDirIterator::Subdirectories);
+    QVERIFY(staged.hasNext());
+    workflow.discardActiveRound();
+    QDirIterator remaining(dir.path(), QStringList() << QStringLiteral("*.jpg"), QDir::Files, QDirIterator::Subdirectories);
+    QVERIFY(!remaining.hasNext());
+    QSqlQuery rounds(database.connection());
+    QVERIFY(rounds.exec(QStringLiteral("SELECT COUNT(*) FROM capture_round")));
+    QVERIFY(rounds.next());
+    QCOMPARE(rounds.value(0).toInt(), 0);
+}
+
+void WorkflowTest::clearCaptureHistoryPreservesBindings()
+{
+    QTemporaryDir dir;
+    QVERIFY(dir.isValid());
+    Database database;
+    QString error;
+    QVERIFY(database.open(dir.filePath(QStringLiteral("cleanup.sqlite")), &error));
+    Repository repository(database.connection());
+    ChamberSessionService sessions;
+    sessions.setRepository(&repository);
+    sessions.selectChamber(1);
+    TagProfile profile;
+    profile.uid = QStringLiteral("E004010203040513");
+    profile.dishNumber = QStringLiteral("1");
+    profile.inseminationTime = QDateTime::currentDateTime();
+    profile.femaleName = QStringLiteral("CleanupTest");
+    profile.medicalRecordNumber = QStringLiteral("CL-1");
+    profile.identifiedAt = QDateTime::currentDateTime();
+    QVERIFY2(sessions.bindProfile(profile, &error), qPrintable(error));
+    ImageFileStore files(dir.path());
+    CaptureWorkflowService workflow(&sessions);
+    workflow.setPersistence(&repository, &files);
+    QVERIFY(workflow.createRound(&error));
+    QImage image(32, 32, QImage::Format_RGB32);
+    image.fill(Qt::blue);
+    for (int i = 0; i < 16; ++i) QVERIFY(workflow.acceptCapture(image, false, &error));
+    QVERIFY(repository.clearCaptureHistory(&error));
+    QVERIFY(files.clearCaptureStorage(&error));
+    QSqlQuery rounds(database.connection());
+    QVERIFY(rounds.exec(QStringLiteral("SELECT COUNT(*) FROM capture_round")));
+    QVERIFY(rounds.next());
+    QCOMPARE(rounds.value(0).toInt(), 0);
+    QSqlQuery tags(database.connection());
+    QVERIFY(tags.exec(QStringLiteral("SELECT COUNT(*) FROM tag_profile")));
+    QVERIFY(tags.next());
+    QCOMPARE(tags.value(0).toInt(), 1);
+    QSqlQuery bindings(database.connection());
+    QVERIFY(bindings.exec(QStringLiteral("SELECT tag_uid FROM chamber_assignment WHERE chamber_no=1")));
+    QVERIFY(bindings.next());
+    QCOMPARE(bindings.value(0).toString(), profile.uid);
+    QDirIterator images(dir.path(), QStringList() << QStringLiteral("*.jpg"), QDir::Files, QDirIterator::Subdirectories);
+    QVERIFY(!images.hasNext());
 }
 
 void WorkflowTest::captureParametersAndRoundSequencePersist()

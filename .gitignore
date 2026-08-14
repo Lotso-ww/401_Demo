@@ -36,3 +36,21 @@
 /out/
 cmake-build-*/
 *.user
+
+# Never use the source root as a build directory.  These are generated when
+# an in-source CMake configure is run and must not be kept with the source.
+/.cmake/
+/CMakeCache.txt
+/CMakeFiles/
+/Testing/
+/.ninja_deps
+/.ninja_log
+/build.ninja
+/cmake_install.cmake
+/CTestTestfile.cmake
+/DartConfiguration.tcl
+/Tls401RfidCcdDemo.cbp
+/*_autogen/
+/dependency_probe.*
+/tst_workflow.*
+/tls401_demo.*

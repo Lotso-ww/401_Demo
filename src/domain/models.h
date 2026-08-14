@@ -3,6 +3,7 @@
 
 #include <QDateTime>
 #include <QImage>
+#include <QSize>
 #include <QString>
 #include <QVector>
 #include <optional>
@@ -31,6 +32,8 @@ struct RfidResult {
 
 struct WellCapture {
     QImage image;
+    QSize sourceSize;
+    QString stagedImagePath;
     QDateTime capturedAt;
     bool active = true;
     bool available = true;

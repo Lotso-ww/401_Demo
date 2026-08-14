@@ -33,7 +33,21 @@ CaptureRound *CaptureWorkflowService::activeRound() { auto *model = m_sessions->
 bool CaptureWorkflowService::hasActiveRound() const { return const_cast<CaptureWorkflowService *>(this)->activeRound() != nullptr; }
 bool CaptureWorkflowService::createRound(QString *error) { auto *model = m_sessions->selectedModel(); if (!model || !model->profile) { if (error) *error = QStringLiteral("A recognized tag is required before creating a round."); return false; } if (activeRound()) { if (error) *error = QStringLiteral("A capture round is already active."); return false; } int roundNo = static_cast<int>(model->rounds.size()) + 1; if (m_repository && !m_repository->nextRoundNumber(model->profile->uid, &roundNo, error)) return false; m_activeRoundId = 0; model->rounds.push_back(CaptureRound(roundNo, false)); m_currentWell = 1; emit changed(); return true; }
 bool CaptureWorkflowService::finishRound() { auto *round = activeRound(); auto *model = m_sessions->selectedModel(); if (!round || !model || !model->profile) return false; for (const auto &well : round->history) if (well.isEmpty() || !well.last().available) return false; QString error; if (!persistCompletedRound(round, *model->profile, model->number, &error)) return false; round->finished = true; emit changed(); return true; }
-void CaptureWorkflowService::discardActiveRound() { auto *model = m_sessions->selectedModel(); if (!model || !activeRound()) return; model->rounds.removeLast(); m_activeRoundId = 0; m_currentWell = 1; emit changed(); }
+void CaptureWorkflowService::discardActiveRound()
+{
+    auto *model = m_sessions->selectedModel();
+    auto *round = activeRound();
+    if (!model || !round) return;
+    if (m_imageStore) {
+        for (const auto &well : round->history)
+            for (const auto &capture : well)
+                m_imageStore->remove(capture.stagedImagePath);
+    }
+    model->rounds.removeLast();
+    m_activeRoundId = 0;
+    m_currentWell = 1;
+    emit changed();
+}
 bool CaptureWorkflowService::selectWell(int wellNo) { if (!activeRound() || wellNo < 1 || wellNo > 16) return false; m_currentWell = wellNo; emit changed(); return true; }
 bool CaptureWorkflowService::prepareCapture(const QImage &image, bool retake, double exposureUs, double gainDb,
                                             PendingCapture *pending, QString *error)
@@ -69,8 +83,26 @@ bool CaptureWorkflowService::commitCapture(const PendingCapture &pending, QStrin
         if (error) *error = QStringLiteral("The selected well changed before the image was saved.");
         return false;
     }
-    for (auto &capture : well) capture.active = false;
-    well.push_back({pending.image, pending.capturedAt, true, true, pending.exposureUs, pending.gainDb});
+    WellCapture capture;
+    capture.capturedAt = pending.capturedAt;
+    capture.sourceSize = pending.image.size();
+    capture.active = true;
+    capture.available = true;
+    capture.exposureUs = pending.exposureUs;
+    capture.gainDb = pending.gainDb;
+    if (m_imageStore) {
+        if (!m_imageStore->stageJpeg(pending.image, pending.profile.uid, pending.roundNo, pending.wellNo,
+                                     pending.capturedAt, &capture.stagedImagePath, error))
+            return false;
+        capture.image = pending.image.scaled(QSize(800, 600), Qt::KeepAspectRatio, Qt::FastTransformation);
+    } else {
+        capture.image = pending.image;
+    }
+    for (auto &previous : well) {
+        previous.active = false;
+        if (m_imageStore) m_imageStore->remove(previous.stagedImagePath);
+    }
+    well.push_back(std::move(capture));
     bool completed = true;
     for (const auto &item : round->history) if (item.isEmpty() || !item.last().available) completed = false;
     if (completed) {
@@ -104,10 +136,14 @@ bool CaptureWorkflowService::persistCompletedRound(CaptureRound *round, const Ta
         return false;
     QVector<QString> paths;
     for (int wellNo = 1; wellNo <= 16; ++wellNo) {
-        const WellCapture &capture = round->history[wellNo - 1].last();
+        WellCapture &capture = round->history[wellNo - 1].last();
         QString path;
-        if (!m_imageStore->savePng(capture.image, profile.uid, round->number, wellNo, capture.capturedAt, &path, error)
-            || !m_repository->insertImage(roundId, profile, wellNo, path, capture.image, capture.capturedAt,
+        const QSize imageSize = capture.sourceSize.isValid() ? capture.sourceSize : capture.image.size();
+        const bool stored = capture.stagedImagePath.isEmpty()
+            ? m_imageStore->savePng(capture.image, profile.uid, round->number, wellNo, capture.capturedAt, &path, error)
+            : m_imageStore->finalizeStagedJpeg(capture.stagedImagePath, profile.uid, round->number, wellNo,
+                                               capture.capturedAt, &path, error);
+        if (!stored || !m_repository->insertImage(roundId, profile, wellNo, path, imageSize, capture.capturedAt,
                                           capture.exposureUs, capture.gainDb, 0, nullptr, error)) {
             if (!path.isEmpty()) paths.push_back(path);
             for (const auto &savedPath : paths) m_imageStore->remove(savedPath);
@@ -123,6 +159,11 @@ bool CaptureWorkflowService::persistCompletedRound(CaptureRound *round, const Ta
     }
     round->persistentId = roundId;
     m_activeRoundId = roundId;
+    for (auto &well : round->history)
+        for (auto &capture : well) {
+            m_imageStore->remove(capture.stagedImagePath);
+            capture.stagedImagePath.clear();
+        }
     return true;
 }
 void CaptureWorkflowService::advanceToNext() { auto *round = activeRound(); if (!round) return; for (int offset = 1; offset <= 16; ++offset) { const int candidate = ((m_currentWell - 1 + offset) % 16); if (round->history[candidate].isEmpty()) { m_currentWell = candidate + 1; return; } } }

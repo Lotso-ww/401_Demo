@@ -45,6 +45,7 @@ private:
     DeviceState m_cameraState = DeviceState::Offline;
     bool m_databaseReady = false;
     bool m_devicesInitialized = false;
+    bool m_clearCaptureHistoryOnShutdown = false;
     class Database *m_database = nullptr;
     class Repository *m_repository = nullptr;
     class ImageFileStore *m_imageStore = nullptr;

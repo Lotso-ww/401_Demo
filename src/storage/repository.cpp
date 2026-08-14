@@ -30,6 +30,24 @@ bool Repository::clearChamber(int chamberNo, QString *error)
     QSqlQuery q(m_db); q.prepare(QStringLiteral("UPDATE chamber_assignment SET tag_uid=NULL,identified_at=NULL,updated_at=? WHERE chamber_no=?")); q.addBindValue(QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs)); q.addBindValue(chamberNo); if (!q.exec()) { setError(error, q.lastError().text()); return false; } return true;
 }
 
+bool Repository::clearCaptureHistory(QString *error)
+{
+    if (!m_db.transaction()) { setError(error, m_db.lastError().text()); return false; }
+    QSqlQuery images(m_db);
+    if (!images.exec(QStringLiteral("DELETE FROM capture_image"))) {
+        m_db.rollback();
+        setError(error, images.lastError().text());
+        return false;
+    }
+    QSqlQuery rounds(m_db);
+    if (!rounds.exec(QStringLiteral("DELETE FROM capture_round")) || !m_db.commit()) {
+        m_db.rollback();
+        setError(error, rounds.lastError().text());
+        return false;
+    }
+    return true;
+}
+
 bool Repository::loadAssignments(QVector<ChamberModel> *chambers, QString *error) const
 {
     if (!chambers) return false; QSqlQuery q(m_db); if (!q.exec(QStringLiteral("SELECT chamber_no,tag_uid,identified_at FROM chamber_assignment ORDER BY chamber_no"))) { setError(error,q.lastError().text()); return false; }
@@ -148,10 +166,10 @@ bool Repository::deleteRound(qint64 id, QString *error)
     return true;
 }
 
-bool Repository::insertImage(qint64 roundId,const TagProfile&p,int wellNo,const QString&path,const QImage&image,const QDateTime&capturedAt,double exposure,double gain,qint64 replacedId,qint64*id,QString*error)
+bool Repository::insertImage(qint64 roundId,const TagProfile&p,int wellNo,const QString&path,const QSize&imageSize,const QDateTime&capturedAt,double exposure,double gain,qint64 replacedId,qint64*id,QString*error)
 {
     if(!m_db.transaction()){setError(error,m_db.lastError().text());return false;} QSqlQuery q(m_db);
     if (replacedId <= 0) { q.prepare(QStringLiteral("SELECT id FROM capture_image WHERE round_id=? AND well_no=? AND focal_layer=0 AND is_active=1 ORDER BY id DESC LIMIT 1")); q.addBindValue(roundId); q.addBindValue(wellNo); if (!q.exec()) { m_db.rollback(); setError(error, q.lastError().text()); return false; } if (q.next()) replacedId = q.value(0).toLongLong(); }
     if(replacedId>0){q.prepare(QStringLiteral("UPDATE capture_image SET is_active=0 WHERE id=?"));q.addBindValue(replacedId);if(!q.exec()){m_db.rollback();setError(error,q.lastError().text());return false;}}
-    q.prepare(QStringLiteral("INSERT INTO capture_image(round_id,tag_uid,well_no,focal_layer,file_path,captured_at,width,height,exposure_us,gain_db,is_active,file_available,replaced_image_id) VALUES(?,?,?,?,?,?,?,?,?,?,1,1,?)")); q.addBindValue(roundId);q.addBindValue(p.uid);q.addBindValue(wellNo);q.addBindValue(0);q.addBindValue(path);q.addBindValue(capturedAt.toUTC().toString(Qt::ISODateWithMs));q.addBindValue(image.width());q.addBindValue(image.height());q.addBindValue(exposure);q.addBindValue(gain);q.addBindValue(replacedId>0?QVariant(replacedId):QVariant()); if(!q.exec()||!m_db.commit()){m_db.rollback();setError(error,q.lastError().text());return false;} if(id)*id=q.lastInsertId().toLongLong();return true;
+    q.prepare(QStringLiteral("INSERT INTO capture_image(round_id,tag_uid,well_no,focal_layer,file_path,captured_at,width,height,exposure_us,gain_db,is_active,file_available,replaced_image_id) VALUES(?,?,?,?,?,?,?,?,?,?,1,1,?)")); q.addBindValue(roundId);q.addBindValue(p.uid);q.addBindValue(wellNo);q.addBindValue(0);q.addBindValue(path);q.addBindValue(capturedAt.toUTC().toString(Qt::ISODateWithMs));q.addBindValue(imageSize.width());q.addBindValue(imageSize.height());q.addBindValue(exposure);q.addBindValue(gain);q.addBindValue(replacedId>0?QVariant(replacedId):QVariant()); if(!q.exec()||!m_db.commit()){m_db.rollback();setError(error,q.lastError().text());return false;} if(id)*id=q.lastInsertId().toLongLong();return true;
 }

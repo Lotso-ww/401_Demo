@@ -4,12 +4,16 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QElapsedTimer>
+#include <QFile>
 #include <QProcessEnvironment>
 #include <QRegularExpression>
 #include <QSet>
+#include <QStandardPaths>
+#include <QTextStream>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QThread>
+#include <new>
 #include <stdexcept>
 
 #ifdef TLS401_HAS_RFID_SDK
@@ -30,6 +34,18 @@ void state(QObject *object, DeviceState value, const QString &message)
 {
     if (auto *rfid = qobject_cast<IRfidService *>(object)) emit rfid->stateChanged(value, message);
     if (auto *camera = qobject_cast<ICameraService *>(object)) emit camera->stateChanged(value, message);
+}
+
+void logCcd(const QString &message)
+{
+    static QMutex logMutex;
+    QMutexLocker lock(&logMutex);
+    const QString root = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    if (root.isEmpty() || !QDir().mkpath(QDir(root).filePath(QStringLiteral("logs")))) return;
+    QFile file(QDir(root).filePath(QStringLiteral("logs/ccd.log")));
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text)) return;
+    QTextStream stream(&file);
+    stream << QDateTime::currentDateTime().toString(Qt::ISODateWithMs) << ' ' << message << '\n';
 }
 
 #ifdef TLS401_HAS_RFID_SDK
@@ -87,6 +103,96 @@ struct CameraContext {
     QMutex mutex;
     QImage latest;
 };
+
+struct CameraFrameConfig {
+    qint64 width = 0;
+    qint64 height = 0;
+    qint64 payload = 0;
+    QString mode;
+};
+
+constexpr quint64 kCameraMemoryBudgetBytes = 512ull * 1024 * 1024;
+
+qint64 alignedValue(const std::shared_ptr<peak::core::nodes::IntegerNode> &node, qint64 value)
+{
+    const qint64 minimum = node->Minimum();
+    const qint64 maximum = node->Maximum();
+    const qint64 increment = qMax<qint64>(1, node->Increment());
+    const qint64 bounded = qBound(minimum, value, maximum);
+    return minimum + ((bounded - minimum) / increment) * increment;
+}
+
+bool reduceToCenteredHalfRoi(const std::shared_ptr<peak::core::NodeMap> &nodeMap)
+{
+    try {
+        const auto width = nodeMap->FindNode<peak::core::nodes::IntegerNode>("Width");
+        const auto height = nodeMap->FindNode<peak::core::nodes::IntegerNode>("Height");
+        const qint64 oldWidth = width->Value();
+        const qint64 oldHeight = height->Value();
+        const qint64 targetWidth = alignedValue(width, oldWidth / 2);
+        const qint64 targetHeight = alignedValue(height, oldHeight / 2);
+        if (targetWidth >= oldWidth && targetHeight >= oldHeight) return false;
+
+        std::shared_ptr<peak::core::nodes::IntegerNode> offsetX;
+        std::shared_ptr<peak::core::nodes::IntegerNode> offsetY;
+        try { offsetX = nodeMap->FindNode<peak::core::nodes::IntegerNode>("OffsetX"); offsetX->SetValue(offsetX->Minimum()); } catch (...) {}
+        try { offsetY = nodeMap->FindNode<peak::core::nodes::IntegerNode>("OffsetY"); offsetY->SetValue(offsetY->Minimum()); } catch (...) {}
+        width->SetValue(targetWidth);
+        height->SetValue(targetHeight);
+        if (offsetX) offsetX->SetValue(alignedValue(offsetX, (oldWidth - targetWidth) / 2));
+        if (offsetY) offsetY->SetValue(alignedValue(offsetY, (oldHeight - targetHeight) / 2));
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+CameraFrameConfig configureCameraFrame(const std::shared_ptr<peak::core::NodeMap> &nodeMap)
+{
+    bool usingBinning = false;
+    std::shared_ptr<peak::core::nodes::IntegerNode> binX;
+    std::shared_ptr<peak::core::nodes::IntegerNode> binY;
+    qint64 oldX = 0;
+    qint64 oldY = 0;
+    try {
+        binX = nodeMap->FindNode<peak::core::nodes::IntegerNode>("BinningHorizontal");
+        binY = nodeMap->FindNode<peak::core::nodes::IntegerNode>("BinningVertical");
+        oldX = binX->Value();
+        oldY = binY->Value();
+        if (binX->Minimum() <= 2 && binX->Maximum() >= 2 && binY->Minimum() <= 2 && binY->Maximum() >= 2) {
+            binX->SetValue(2);
+            binY->SetValue(2);
+            usingBinning = binX->Value() == 2 && binY->Value() == 2;
+        }
+        if (!usingBinning) {
+            binX->SetValue(oldX);
+            binY->SetValue(oldY);
+        }
+    } catch (...) {
+        try { if (binX) binX->SetValue(oldX); } catch (...) {}
+        try { if (binY) binY->SetValue(oldY); } catch (...) {}
+        usingBinning = false;
+    }
+
+    if (!usingBinning && !reduceToCenteredHalfRoi(nodeMap))
+        throw std::runtime_error("The camera does not support 2x2 binning or a smaller ROI.");
+
+    auto payloadNode = nodeMap->FindNode<peak::core::nodes::IntegerNode>("PayloadSize");
+    auto widthNode = nodeMap->FindNode<peak::core::nodes::IntegerNode>("Width");
+    auto heightNode = nodeMap->FindNode<peak::core::nodes::IntegerNode>("Height");
+    qint64 payload = payloadNode->Value();
+    qint64 width = widthNode->Value();
+    qint64 height = heightNode->Value();
+    while (static_cast<quint64>(payload) * 5ull + static_cast<quint64>(width) * static_cast<quint64>(height) * 6ull > kCameraMemoryBudgetBytes) {
+        if (!reduceToCenteredHalfRoi(nodeMap))
+            throw std::runtime_error("CCD frame size exceeds the 32-bit process memory budget.");
+        payload = payloadNode->Value();
+        width = widthNode->Value();
+        height = heightNode->Value();
+        usingBinning = false;
+    }
+    return {width, height, payload, usingBinning ? QStringLiteral("2x2 binning") : QStringLiteral("centered ROI")};
+}
 #endif
 }
 
@@ -173,6 +279,8 @@ void RealCameraService::connectDevice()
         manager.Update();
         if (manager.Devices().empty()) throw std::runtime_error("No IDS camera found.");
         auto descriptor = manager.Devices().at(0);
+        logCcd(QStringLiteral("Connecting camera model=%1 serial=%2.")
+                   .arg(QString::fromStdString(descriptor->ModelName()), QString::fromStdString(descriptor->SerialNumber())));
         context->device = descriptor->OpenDevice(peak::core::DeviceAccessType::Control);
         context->nodeMap = context->device->RemoteDevice()->NodeMaps().at(0);
         context->stream = context->device->DataStreams().at(0)->OpenDataStream();
@@ -216,35 +324,81 @@ void RealCameraService::disconnectDevice()
 void RealCameraService::startPreview()
 {
 #ifdef TLS401_HAS_IDS_PEAK
-    auto *context = static_cast<CameraContext *>(m_context); if (!context || !context->stream) { emit stateChanged(DeviceState::Error, QStringLiteral("Camera is not connected.")); return; } if (m_thread && m_thread->isRunning()) return; m_running = true; emit stateChanged(DeviceState::Busy, QStringLiteral("Camera preview started.")); m_thread = QThread::create([this, context] {
+    auto *context = static_cast<CameraContext *>(m_context); if (!context || !context->stream) { emit stateChanged(DeviceState::Error, QStringLiteral("Camera is not connected.")); return; } if (m_thread && m_thread->isRunning()) return;
+    CameraFrameConfig config;
+    try {
+        config = configureCameraFrame(context->nodeMap);
+        logCcd(QStringLiteral("Preview configured: mode=%1 size=%2x%3 payload=%4 bytes buffers=5.")
+                   .arg(config.mode).arg(config.width).arg(config.height).arg(config.payload));
+    } catch (const std::exception &e) {
+        const QString message = QString::fromLocal8Bit(e.what());
+        logCcd(QStringLiteral("Preview configuration failed: %1").arg(message));
+        emit stateChanged(DeviceState::Error, message);
+        return;
+    }
+    m_running = true;
+    emit stateChanged(DeviceState::Busy, QStringLiteral("Camera preview started (%1, %2x%3).").arg(config.mode).arg(config.width).arg(config.height));
+    m_thread = QThread::create([this, context, config] {
         try {
             QElapsedTimer previewTimer;
             previewTimer.start();
-            qint64 lastPreviewMs = -33;
-            const auto payload = context->nodeMap->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
+            QElapsedTimer firstFrameTimer;
+            firstFrameTimer.start();
+            bool firstFrameReceived = false;
+            // Keep the UI preview small and rate-limited.  Sending a complete
+            // CCD frame through the queued signal on every acquisition quickly
+            // exhausts memory when the display thread cannot keep up.
+            qint64 lastPreviewMs = -100;
+            // Some IDS transports do not deliver their first frame reliably
+            // with only the reported minimum queued buffers.  Keep the
+            // established five-buffer acquisition queue; preview copies are
+            // rate-limited below, which is where the former memory growth was.
             const size_t bufferCount = qMax<size_t>(5, context->stream->NumBuffersAnnouncedMinRequired());
-            for (size_t i = 0; i < bufferCount; ++i) context->stream->AllocAndAnnounceBuffer(static_cast<size_t>(payload), nullptr);
+            for (size_t i = 0; i < bufferCount; ++i) context->stream->AllocAndAnnounceBuffer(static_cast<size_t>(config.payload), nullptr);
             for (const auto &buffer : context->stream->AnnouncedBuffers()) context->stream->QueueBuffer(buffer);
             context->stream->StartAcquisition();
             context->nodeMap->FindNode<peak::core::nodes::CommandNode>("AcquisitionStart")->Execute();
             while (m_running) {
                 try {
                     auto buffer = context->stream->WaitForFinishedBuffer(1000);
+                    if (!firstFrameReceived) {
+                        firstFrameReceived = true;
+                        logCcd(QStringLiteral("First frame received after %1 ms: size=%2x%3 pixelFormat=%4.")
+                                   .arg(firstFrameTimer.elapsed()).arg(buffer->Width()).arg(buffer->Height()).arg(buffer->PixelFormat()));
+                    }
+                    const qint64 elapsed = previewTimer.elapsed();
+                    if (elapsed - lastPreviewMs < 100) {
+                        context->stream->QueueBuffer(buffer);
+                        continue;
+                    }
+                    lastPreviewMs = elapsed;
                     peak::ipl::Image raw(peak::ipl::PixelFormat(static_cast<peak::ipl::PixelFormatName>(buffer->PixelFormat())), static_cast<uint8_t *>(buffer->BasePtr()), static_cast<size_t>(buffer->Size()), static_cast<size_t>(buffer->Width()), static_cast<size_t>(buffer->Height()));
                     auto rgb = raw.ConvertTo(peak::ipl::PixelFormat(peak::ipl::PixelFormatName::RGB8));
                     QImage image(static_cast<uchar *>(rgb.PixelPointer(0,0)), static_cast<int>(rgb.Width()), static_cast<int>(rgb.Height()), static_cast<int>(rgb.Width()) * 3, QImage::Format_RGB888);
                     context->stream->QueueBuffer(buffer);
                     { QMutexLocker lock(&context->mutex); context->latest = image.copy(); }
-                    const qint64 elapsed = previewTimer.elapsed();
-                    if (elapsed - lastPreviewMs >= 33) {
-                        lastPreviewMs = elapsed;
-                        QMetaObject::invokeMethod(this, [this, image = image.copy()] { emit previewFrame(image); }, Qt::QueuedConnection);
+                    const QImage preview = image.scaled(QSize(960, 720), Qt::KeepAspectRatio, Qt::FastTransformation);
+                    QMetaObject::invokeMethod(this, [this, preview] { emit previewFrame(preview); }, Qt::QueuedConnection);
+                } catch (const peak::core::TimeoutException &) {
+                    if (!firstFrameReceived && firstFrameTimer.elapsed() >= 5000) {
+                        m_running = false;
+                        logCcd(QStringLiteral("No CCD frame received within 5 seconds."));
+                        QMetaObject::invokeMethod(this, [this] { emit stateChanged(DeviceState::Error, QStringLiteral("No CCD frame was received within 5 seconds. Check the camera connection and trigger mode.")); }, Qt::QueuedConnection);
+                        break;
                     }
-                } catch (const peak::core::TimeoutException &) { continue; }
+                    continue;
+                }
                 catch (const peak::core::AbortedException &) { break; }
             }
+        } catch (const std::bad_alloc &) {
+            m_running = false;
+            logCcd(QStringLiteral("Preview stopped: insufficient memory after output configuration."));
+            QMetaObject::invokeMethod(this, [this] { emit stateChanged(DeviceState::Error, QStringLiteral("CCD preview stopped because there is not enough memory for the current camera resolution.")); }, Qt::QueuedConnection);
         } catch (const std::exception &e) {
-            QMetaObject::invokeMethod(this, [this, message = QString::fromLocal8Bit(e.what())] { emit stateChanged(DeviceState::Error, message); }, Qt::QueuedConnection);
+            m_running = false;
+            const QString message = QString::fromLocal8Bit(e.what());
+            logCcd(QStringLiteral("Preview failed: %1").arg(message));
+            QMetaObject::invokeMethod(this, [this, message] { emit stateChanged(DeviceState::Error, message); }, Qt::QueuedConnection);
         }
         try { context->nodeMap->FindNode<peak::core::nodes::CommandNode>("AcquisitionStop")->Execute(); } catch (...) {}
         try {

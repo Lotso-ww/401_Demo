@@ -4,7 +4,9 @@
 #include "storage/repository.h"
 #include "storage/imagefilestore.h"
 
+#include <QDebug>
 #include <QDir>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QTimer>
 
@@ -49,6 +51,8 @@ ApplicationController::ApplicationController(QObject *parent)
         m_imageStore = new ImageFileStore(root);
         m_sessions.setRepository(m_repository);
         m_workflow.setPersistence(m_repository, m_imageStore);
+        QSettings settings;
+        m_clearCaptureHistoryOnShutdown = !settings.value(QStringLiteral("maintenance/clear_capture_history_20260814_complete"), false).toBool();
     } else {
         emit message(QString::fromUtf8("SQLite initialization failed: %1").arg(dbError), true);
     }
@@ -116,6 +120,14 @@ ApplicationController::~ApplicationController()
     if (m_saveThread) {
         m_saveThread->wait();
         m_saveThread = nullptr;
+    }
+    if (m_clearCaptureHistoryOnShutdown && m_repository && m_imageStore) {
+        QString cleanupError;
+        if (m_repository->clearCaptureHistory(&cleanupError) && m_imageStore->clearCaptureStorage(&cleanupError)) {
+            QSettings().setValue(QStringLiteral("maintenance/clear_capture_history_20260814_complete"), true);
+        } else {
+            qWarning() << "Capture history cleanup failed:" << cleanupError;
+        }
     }
     delete m_imageStore;
     delete m_repository;

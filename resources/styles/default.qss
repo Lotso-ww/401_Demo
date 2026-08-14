@@ -2,6 +2,7 @@ QMainWindow { background: #17191c; color: #eceff1; }
 QWidget { font-family: "Microsoft YaHei"; font-size: 13px; }
 QFrame#topBar, QFrame#sidePanel { background: #21252a; color: #f4f6f8; }
 QLabel#pageTitle { font-size: 20px; font-weight: 600; color: #f4f6f8; }
+QLabel#statusLabel { color: #d9e8f2; font-size: 14px; font-weight: 600; }
 QPushButton { background: #e8edf1; border: 1px solid #bac4cc; border-radius: 4px; padding: 7px 11px; min-height: 20px; }
 QPushButton:hover { background: #d9e2e9; }
 QPushButton:checked, QPushButton#primary { background: #2378c3; border-color: #2378c3; color: white; }
