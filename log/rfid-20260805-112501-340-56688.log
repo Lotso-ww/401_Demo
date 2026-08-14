@@ -1,0 +1,12 @@
+[2026-08-05 11:25:01.343][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260805-112501-340-56688.log
+[2026-08-05 11:25:10.054][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeAttempts=1 probeResult=0
+[2026-08-05 11:25:21.136][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:25:22.317][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:25:24.138][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:25:25.343][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:25:39.403][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:25:40.607][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:26:21.662][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:26:22.109][INFO][SCAN_CHANGE][0] Tag UID appeared in the stability window. currentUids=E0040150B1566A62 elapsedMs=442 previousUids=NONE
+[2026-08-05 11:26:22.226][INFO][SCAN_CHANGE][0] Tag UID disappeared from the stability window. currentUids=NONE elapsedMs=559 previousUids=E0040150B1566A62
+[2026-08-05 11:26:22.841][INFO][SCAN][0] Stable business scan completed. resultCode=0 uniqueTagCount=1

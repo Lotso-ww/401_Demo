@@ -1,0 +1,8 @@
+[2026-08-05 11:29:48.263][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260805-112948-260-9656.log
+[2026-08-05 11:29:56.535][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeAttempts=1 probeResult=0
+[2026-08-05 11:30:01.233][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:30:02.423][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:30:04.434][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:30:05.625][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:30:07.435][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:30:08.644][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0

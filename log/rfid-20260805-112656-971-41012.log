@@ -1,0 +1,74 @@
+[2026-08-05 11:26:56.971][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260805-112656-971-41012.log
+[2026-08-05 11:27:05.942][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeAttempts=1 probeResult=0
+[2026-08-05 11:27:13.390][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:27:13.457][INFO][SCAN_CHANGE][0] Tag UID appeared in the stability window. currentUids=E0040150B1566A62 elapsedMs=64 previousUids=NONE
+[2026-08-05 11:27:13.573][INFO][SCAN_CHANGE][0] Tag UID disappeared from the stability window. currentUids=NONE elapsedMs=180 previousUids=E0040150B1566A62
+[2026-08-05 11:27:14.589][INFO][SCAN][0] Stable business scan completed. resultCode=0 uniqueTagCount=1
+[2026-08-05 11:27:19.402][INFO][READ][0] Reading connected tag. uid=E0040150B1566A62
+[2026-08-05 11:27:19.406][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:27:19.407][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:19.433][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:19.433][WARN][RETRY][1] Retry scheduled. delayMs=300
+[2026-08-05 11:27:19.735][INFO][ATTEMPT][2] Business operation started.
+[2026-08-05 11:27:19.736][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:19.762][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:19.762][WARN][RETRY][2] Retry scheduled. delayMs=500
+[2026-08-05 11:27:20.264][INFO][ATTEMPT][3] Business operation started.
+[2026-08-05 11:27:20.264][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:20.291][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:20.291][ERROR][FAILED][3] Reading ISO15693 system information failed. sdkError=-17
+[2026-08-05 11:27:23.776][INFO][READ][0] Reading connected tag. uid=E0040150B1566A62
+[2026-08-05 11:27:23.786][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:27:23.787][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:23.864][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:23.865][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***1103 name=Л╧*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-05 11:27:36.412][INFO][WRITE][0] Payload encoded. medicalRecord=***1111 name=уе*** payloadHex=[SENSITIVE_HEX] uid=E0040150B1566A62
+[2026-08-05 11:27:37.870][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:27:37.872][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:37.899][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:37.900][WARN][RETRY][1] Retry scheduled. delayMs=300
+[2026-08-05 11:27:38.208][INFO][ATTEMPT][2] Business operation started.
+[2026-08-05 11:27:38.209][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:38.235][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:38.236][WARN][RETRY][2] Retry scheduled. delayMs=500
+[2026-08-05 11:27:38.742][INFO][ATTEMPT][3] Business operation started.
+[2026-08-05 11:27:38.743][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:38.769][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:38.770][ERROR][FAILED][3] Reading ISO15693 system information failed. sdkError=-17
+[2026-08-05 11:27:46.999][INFO][WRITE][0] Payload encoded. medicalRecord=1111 name=1*** payloadHex=[SENSITIVE_HEX] uid=E0040150B1566A62
+[2026-08-05 11:27:48.560][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:27:48.561][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:48.588][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:48.588][WARN][RETRY][1] Retry scheduled. delayMs=300
+[2026-08-05 11:27:48.890][INFO][ATTEMPT][2] Business operation started.
+[2026-08-05 11:27:48.891][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:48.918][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:48.918][WARN][RETRY][2] Retry scheduled. delayMs=500
+[2026-08-05 11:27:49.419][INFO][ATTEMPT][3] Business operation started.
+[2026-08-05 11:27:49.420][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:27:49.447][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:27:49.447][ERROR][FAILED][3] Reading ISO15693 system information failed. sdkError=-17
+[2026-08-05 11:28:05.687][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:28:06.886][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:28:08.777][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:28:09.978][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:28:12.456][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:28:13.624][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:28:50.793][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:28:51.981][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:28:53.747][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:28:54.929][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:28:57.015][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:28:58.219][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:29:12.526][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:29:13.732][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:29:15.691][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:29:16.902][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:29:22.938][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:29:24.129][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:29:28.198][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:29:29.374][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:29:31.178][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:29:32.355][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0
+[2026-08-05 11:29:34.295][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:29:35.486][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10001 uniqueTagCount=0

@@ -1,0 +1,19 @@
+[2026-08-04 09:45:34.828][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260804-094534-827-53320.log
+[2026-08-04 09:45:44.498][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeResult=0
+[2026-08-04 09:46:29.990][INFO][CLOSE][0] Reader closed.
+[2026-08-04 09:46:30.853][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeResult=0
+[2026-08-04 09:47:09.284][INFO][READ][0] Reading connected tag. uid=E0040150B1566A62
+[2026-08-04 09:47:09.289][INFO][ATTEMPT][1] Business operation started.
+[2026-08-04 09:47:09.289][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-04 09:47:09.914][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-04 09:47:09.915][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***-002 name=¿Ó*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-04 09:47:39.085][INFO][WRITE][0] Payload encoded. medicalRecord=***-003 name=–§*** payloadHex=[SENSITIVE_HEX] uid=E0040150B1566A62
+[2026-08-04 09:47:40.309][INFO][ATTEMPT][1] Business operation started.
+[2026-08-04 09:47:40.310][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-04 09:47:41.045][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-04 09:47:41.047][INFO][COMPLETE][1] Tag payload written and verified successfully. medicalRecord=***-003 name=–§*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-04 09:47:43.007][INFO][READ][0] Reading connected tag. uid=E0040150B1566A62
+[2026-08-04 09:47:43.017][INFO][ATTEMPT][1] Business operation started.
+[2026-08-04 09:47:43.017][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-04 09:47:43.638][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-04 09:47:43.639][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***-003 name=–§*** payloadHex=[SENSITIVE_HEX] sdkError=0

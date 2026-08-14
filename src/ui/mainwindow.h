@@ -71,4 +71,5 @@ private:
     QStackedWidget *m_wellModes = nullptr;
     QPushButton *m_browseMode = nullptr;
     QPushButton *m_calibrationMode = nullptr;
+    int m_currentPage = 0;
 };

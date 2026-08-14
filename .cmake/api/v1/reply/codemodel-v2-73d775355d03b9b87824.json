@@ -6,6 +6,13 @@
 			[
 				{
 					"directoryIndex" : 0,
+					"id" : "IdsPeak::Sdk::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-IdsPeak__Sdk-Debug-5b3721ebc5de70ac077e.json",
+					"name" : "IdsPeak::Sdk",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
 					"id" : "Qt5::Core::@6890427a1f51a3e7e1df",
 					"jsonFile" : "target-Qt5__Core-Debug-bedf4e88de3881efe92b.json",
 					"name" : "Qt5::Core",
@@ -262,6 +269,27 @@
 					"jsonFile" : "target-Qt5__uic-Debug-506bbb37b83277e816b0.json",
 					"name" : "Qt5::uic",
 					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "RfidSdk::Driver::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-RfidSdk__Driver-Debug-dea7fd402953260aa3e9.json",
+					"name" : "RfidSdk::Driver",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "RfidSdk::Iso15693::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-RfidSdk__Iso15693-Debug-20a28ada509e0c765952.json",
+					"name" : "RfidSdk::Iso15693",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "RfidSdk::Reader::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-RfidSdk__Reader-Debug-ecfd1cea7fdbcf525fc3.json",
+					"name" : "RfidSdk::Reader",
+					"projectIndex" : 0
 				}
 			],
 			"directories" : 
@@ -305,7 +333,11 @@
 						33,
 						34,
 						35,
-						36
+						36,
+						37,
+						38,
+						39,
+						40
 					],
 					"build" : ".",
 					"jsonFile" : "directory-.-Debug-b5805d5c08fd3d92def4.json",
@@ -397,7 +429,11 @@
 						33,
 						34,
 						35,
-						36
+						36,
+						37,
+						38,
+						39,
+						40
 					],
 					"directoryIndexes" : 
 					[
@@ -645,14 +681,14 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "dependency_probe::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-dependency_probe-Debug-ed69f54d30fb9c063c95.json",
+					"jsonFile" : "target-dependency_probe-Debug-12df9534eb5168e274a0.json",
 					"name" : "dependency_probe",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "dependency_probe_autogen::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-dependency_probe_autogen-Debug-3fbb4b74a56e643f57d6.json",
+					"jsonFile" : "target-dependency_probe_autogen-Debug-96a3e3cd755dfbe60f7b.json",
 					"name" : "dependency_probe_autogen",
 					"projectIndex" : 0
 				},
@@ -666,14 +702,14 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "tls401_demo::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-tls401_demo-Debug-328bed2dd671308523ef.json",
+					"jsonFile" : "target-tls401_demo-Debug-499a1239a352eb2a10b4.json",
 					"name" : "tls401_demo",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "tls401_demo_autogen::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-tls401_demo_autogen-Debug-848c88f091d4f8398c1b.json",
+					"jsonFile" : "target-tls401_demo_autogen-Debug-5af834d6578446485493.json",
 					"name" : "tls401_demo_autogen",
 					"projectIndex" : 0
 				},
@@ -687,7 +723,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "tst_workflow_autogen::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-tst_workflow_autogen-Debug-fe5f71ea097ff3a94100.json",
+					"jsonFile" : "target-tst_workflow_autogen-Debug-26c6215a5583bdc7ab3c.json",
 					"name" : "tst_workflow_autogen",
 					"projectIndex" : 0
 				}

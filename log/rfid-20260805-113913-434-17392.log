@@ -1,0 +1,45 @@
+[2026-08-05 11:39:13.435][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260805-113913-434-17392.log
+[2026-08-05 11:39:24.442][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeAttempts=1 probeResult=0
+[2026-08-05 11:39:30.284][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:39:30.353][INFO][SCAN_CHANGE][0] Tag UID appeared in the stability window. currentUids=E0040150B1566A62 elapsedMs=64 previousUids=NONE
+[2026-08-05 11:39:30.509][INFO][SCAN_CHANGE][0] Tag UID disappeared from the stability window. currentUids=NONE elapsedMs=220 previousUids=E0040150B1566A62
+[2026-08-05 11:39:30.660][INFO][SCAN_CHANGE][0] Tag UID appeared in the stability window. currentUids=E0040150B1566A62 elapsedMs=360 previousUids=NONE
+[2026-08-05 11:39:31.463][INFO][SCAN][0] Stable business scan completed. resultCode=0 uniqueTagCount=1
+[2026-08-05 11:39:38.679][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:39:38.746][INFO][SCAN_CHANGE][0] Tag UID appeared in the stability window. currentUids=E0040150B1566A5D elapsedMs=64 previousUids=NONE
+[2026-08-05 11:39:39.855][INFO][SCAN][0] Stable business scan completed. resultCode=0 uniqueTagCount=1
+[2026-08-05 11:39:44.091][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:39:44.102][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:39:44.103][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:39:44.233][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:39:44.233][ERROR][FAILED][1] The tag is blank. Write business data to initialize it. payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-05 11:39:51.805][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:39:51.811][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:39:51.812][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:39:51.941][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:39:51.942][ERROR][FAILED][1] The tag is blank. Write business data to initialize it. payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-05 11:40:06.225][INFO][WRITE][0] Payload encoded. medicalRecord=***1111 name=长*** payloadHex=[SENSITIVE_HEX] uid=E0040150B1566A5D
+[2026-08-05 11:40:07.919][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:40:07.919][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:40:08.110][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:40:08.112][INFO][COMPLETE][1] Tag payload written and verified successfully. medicalRecord=***1111 name=长*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-05 11:40:13.386][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:40:13.394][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:40:13.395][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:40:13.472][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:40:13.473][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***1111 name=长*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-05 11:40:24.604][INFO][WRITE][0] Payload encoded. medicalRecord=***1111 name=王*** payloadHex=[SENSITIVE_HEX] uid=E0040150B1566A5D
+[2026-08-05 11:40:26.237][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:40:26.239][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:40:26.430][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:40:26.431][INFO][COMPLETE][1] Tag payload written and verified successfully. medicalRecord=***1111 name=王*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-05 11:40:28.793][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:40:28.805][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:40:28.806][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:40:28.884][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:40:28.884][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***1111 name=王*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-05 11:40:46.929][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:40:46.939][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:40:46.939][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:40:47.018][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:40:47.018][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***1111 name=王*** payloadHex=[SENSITIVE_HEX] sdkError=0

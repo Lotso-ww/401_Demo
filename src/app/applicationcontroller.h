@@ -2,6 +2,8 @@
 
 #include "app/workflowservices.h"
 #include "devices/deviceinterfaces.h"
+#include <QPointer>
+#include <QThread>
 #include <QVector>
 
 class ApplicationController : public QObject {
@@ -17,11 +19,14 @@ public:
     DeviceState rfidState() const { return m_rfidState; }
     DeviceState cameraState() const { return m_cameraState; }
     bool databaseReady() const { return m_databaseReady; }
+    void initializeDevices();
     void identify();
     void identifyAll();
     void startCaptureSequence();
     bool sequenceActive() const { return m_sequenceMode != SequenceMode::None; }
     QString sequenceStatus() const { return m_sequenceStatus; }
+    bool captureSequencePaused() const { return m_capturePaused; }
+    void setCaptureSequencePaused(bool paused);
     void captureCurrent(bool retake = false);
 signals:
     void message(const QString &text, bool error);
@@ -38,6 +43,7 @@ private:
     DeviceState m_rfidState = DeviceState::Offline;
     DeviceState m_cameraState = DeviceState::Offline;
     bool m_databaseReady = false;
+    bool m_devicesInitialized = false;
     class Database *m_database = nullptr;
     class Repository *m_repository = nullptr;
     class ImageFileStore *m_imageStore = nullptr;
@@ -46,5 +52,9 @@ private:
 
     SequenceMode m_sequenceMode = SequenceMode::None;
     bool m_captureRetake = false;
+    bool m_capturePaused = false;
+    bool m_previewFrameAvailable = false;
+    bool m_captureRequestPending = false;
+    QPointer<QThread> m_saveThread;
     QString m_sequenceStatus;
 };

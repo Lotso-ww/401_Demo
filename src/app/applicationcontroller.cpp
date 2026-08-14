@@ -8,6 +8,31 @@
 #include <QStandardPaths>
 #include <QTimer>
 
+namespace {
+bool isUsableCapture(const QImage &image)
+{
+    if (image.isNull() || image.width() < 32 || image.height() < 32)
+        return false;
+    const QImage gray = image.convertToFormat(QImage::Format_Grayscale8);
+    const int step = qMax(1, qMin(gray.width(), gray.height()) / 64);
+    qint64 sum = 0;
+    qint64 squaredSum = 0;
+    int samples = 0;
+    for (int y = 0; y < gray.height(); y += step) {
+        const uchar *line = gray.constScanLine(y);
+        for (int x = 0; x < gray.width(); x += step) {
+            const int value = line[x];
+            sum += value;
+            squaredSum += value * value;
+            ++samples;
+        }
+    }
+    const double mean = static_cast<double>(sum) / samples;
+    const double variance = static_cast<double>(squaredSum) / samples - mean * mean;
+    return mean >= 12.0 && variance >= 9.0;
+}
+}
+
 ApplicationController::ApplicationController(QObject *parent)
     : QObject(parent), m_sessions(this), m_workflow(&m_sessions, this), m_rfid(nullptr), m_camera(nullptr)
 {
@@ -24,12 +49,6 @@ ApplicationController::ApplicationController(QObject *parent)
         m_imageStore = new ImageFileStore(root);
         m_sessions.setRepository(m_repository);
         m_workflow.setPersistence(m_repository, m_imageStore);
-        QString loadError;
-        QVector<ChamberModel> persisted = m_sessions.chambers();
-        if (m_repository->loadAssignments(&persisted, &loadError) && m_repository->loadRounds(&persisted, &loadError))
-            m_sessions.restoreProfiles(persisted);
-        else
-            emit message(QString::fromUtf8("SQLite recovery failed: %1").arg(loadError), true);
     } else {
         emit message(QString::fromUtf8("SQLite initialization failed: %1").arg(dbError), true);
     }
@@ -47,9 +66,15 @@ ApplicationController::ApplicationController(QObject *parent)
             emit message(QString::fromUtf8("CCD\xEF\xBC\x9A%1").arg(detail), true);
     });
     connect(m_camera, &ICameraService::captureFailed, this, [this](const QString &reason) {
+        m_captureRequestPending = false;
         emit message(QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE5\xA4\xB1\xE8\xB4\xA5\xEF\xBC\x9A%1").arg(reason), true);
         if (m_sequenceMode == SequenceMode::Capturing)
             finishSequence();
+    });
+    connect(m_camera, &ICameraService::previewFrame, this, [this](const QImage &) {
+        m_previewFrameAvailable = true;
+        if (m_sequenceMode == SequenceMode::Capturing && !m_capturePaused)
+            captureNext();
     });
     connect(m_camera, &ICameraService::captured, this, [this](const QImage &image) { handleCapturedFrame(image); });
     connect(m_rfid, &IRfidService::recognized, this, [this](const RfidResult &result) {
@@ -80,8 +105,6 @@ ApplicationController::ApplicationController(QObject *parent)
         emit message(QString::fromUtf8("16 \xE5\xAD\x94\xE5\xB7\xB2\xE5\xAE\x8C\xE6\x88\x90\xEF\xBC\x8C\xE6\x9C\xAC\xE8\xBD\xAE\xE9\x87\x87\xE9\x9B\x86\xE5\xB7\xB2\xE7\xBB\x93\xE6\x9D\x9F"), false);
     });
 
-    m_rfid->initialize();
-    m_camera->connectDevice();
 }
 
 ApplicationController::~ApplicationController()
@@ -90,9 +113,22 @@ ApplicationController::~ApplicationController()
         m_camera->disconnectDevice();
     if (m_rfid)
         m_rfid->cancel();
+    if (m_saveThread) {
+        m_saveThread->wait();
+        m_saveThread = nullptr;
+    }
     delete m_imageStore;
     delete m_repository;
     delete m_database;
+}
+
+void ApplicationController::initializeDevices()
+{
+    if (m_devicesInitialized)
+        return;
+    m_devicesInitialized = true;
+    m_rfid->initialize();
+    m_camera->connectDevice();
 }
 
 void ApplicationController::identify()
@@ -108,6 +144,11 @@ void ApplicationController::identifyAll()
 {
     if (sequenceActive()) {
         emit message(QString::fromUtf8("\xE8\xAF\x86\xE5\x88\xAB\xE6\x88\x96\xE6\x8B\x8D\xE7\x85\xA7\xE9\x98\x9F\xE5\x88\x97\xE6\xAD\xA3\xE5\x9C\xA8\xE8\xBF\x90\xE8\xA1\x8C"), true);
+        return;
+    }
+    QString clearError;
+    if (!m_sessions.clearAll(&clearError)) {
+        emit message(clearError, true);
         return;
     }
     m_sequenceChambers = {4, 3, 2, 1};
@@ -137,24 +178,34 @@ void ApplicationController::startCaptureSequence()
         emit message(QString::fromUtf8("\xE8\xAF\x86\xE5\x88\xAB\xE6\x88\x96\xE6\x8B\x8D\xE7\x85\xA7\xE9\x98\x9F\xE5\x88\x97\xE6\xAD\xA3\xE5\x9C\xA8\xE8\xBF\x90\xE8\xA1\x8C"), true);
         return;
     }
-    for (int chamber : {4, 3, 2, 1}) {
-        if (!m_sessions.chambers().at(chamber - 1).profile) {
-            emit message(QString::fromUtf8("\xE8\xAF\xB7\xE5\x85\x88\xE5\xAE\x8C\xE6\x88\x90\xE5\x9B\x9B\xE4\xB8\xAA\xE8\x88\xB1\xE5\xAE\xA4\xE8\xAF\x86\xE5\x88\xAB"), true);
-            return;
-        }
+    m_sequenceChambers.clear();
+    for (int chamber : {4, 3, 2, 1})
+        if (m_sessions.chambers().at(chamber - 1).profile)
+            m_sequenceChambers.push_back(chamber);
+    if (m_sequenceChambers.isEmpty()) {
+        emit message(QStringLiteral("Please identify at least one chamber before starting capture."), true);
+        return;
     }
-    m_sequenceChambers = {4, 3, 2, 1};
     m_sequenceIndex = 0;
     m_sequenceMode = SequenceMode::Capturing;
+    m_capturePaused = false;
+    m_previewFrameAvailable = false;
+    m_captureRequestPending = false;
     m_sequenceStatus = QString::fromUtf8("\xE6\xAD\xA3\xE5\x9C\xA8\xE6\x8C\x89 4 \xE2\x86\x92 3 \xE2\x86\x92 2 \xE2\x86\x92 1 \xE6\x8B\x8D\xE7\x85\xA7");
     emit stateChanged();
+    m_camera->startPreview();
     captureNext();
 }
 
 void ApplicationController::captureNext()
 {
-    if (m_sequenceMode != SequenceMode::Capturing)
+    if (m_sequenceMode != SequenceMode::Capturing || m_capturePaused || m_captureRequestPending)
         return;
+    if (!m_previewFrameAvailable) {
+        m_sequenceStatus = QString::fromUtf8("等待 CCD 实时画面后开始拍照");
+        emit stateChanged();
+        return;
+    }
     if (m_sequenceChambers.isEmpty()) {
         finishSequence(QString::fromUtf8("\xE5\x9B\x9B\xE4\xB8\xAA\xE8\x88\xB1\xE5\xAE\xA4\xE6\x8B\x8D\xE7\x85\xA7\xE5\xAE\x8C\xE6\x88\x90"));
         return;
@@ -172,6 +223,7 @@ void ApplicationController::captureNext()
     }
     m_sequenceStatus = QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE4\xB8\xAD\xEF\xBC\x9A%1 \xE5\x8F\xB7\xE8\x88\xB1 / %2 \xE5\x8F\xB7\xE5\xAD\x94").arg(chamber).arg(m_workflow.currentWell());
     emit stateChanged();
+    m_captureRequestPending = true;
     m_camera->capture();
 }
 
@@ -181,27 +233,52 @@ void ApplicationController::captureCurrent(bool retake)
         emit message(QString::fromUtf8("\xE8\xAF\xB7\xE7\xAD\x89\xE5\xBE\x85\xE8\x87\xAA\xE5\x8A\xA8\xE6\x8B\x8D\xE7\x85\xA7\xE9\x98\x9F\xE5\x88\x97\xE5\xAE\x8C\xE6\x88\x90"), true);
         return;
     }
+    if (m_captureRequestPending) {
+        emit message(QStringLiteral("The previous image is still being saved."), true);
+        return;
+    }
     m_captureRetake = retake;
+    m_captureRequestPending = true;
     m_camera->capture();
 }
 
 void ApplicationController::handleCapturedFrame(const QImage &image)
 {
     const int chamberBeforeCapture = m_sessions.selectedChamber();
+    if (!isUsableCapture(image)) {
+        m_captureRequestPending = false;
+        emit message(QString::fromUtf8("CCD\xE5\x9B\xBE\xE5\x83\x8F\xE5\xBC\x82\xE5\xB8\xB8\xEF\xBC\x9A\xE6\x94\xB6\xE5\x88\xB0\xE7\x9A\x84\xE7\x94\xBB\xE9\x9D\xA2\xE8\xBF\x87\xE6\x9A\x97\xE6\x88\x96\xE6\x97\xA0\xE6\x9C\x89\xE6\x95\x88\xE7\xBB\x86\x8A\x82"), true);
+        if (m_sequenceMode == SequenceMode::Capturing)
+            finishSequence();
+        return;
+    }
     QString error;
-    if (!m_workflow.acceptCapture(image, m_captureRetake, m_camera->exposure(), m_camera->gain(), &error)) {
+    CaptureWorkflowService::PendingCapture pending;
+    if (!m_workflow.prepareCapture(image, m_captureRetake, m_camera->exposure(), m_camera->gain(), &pending, &error)) {
+        m_captureRequestPending = false;
         emit message(error, true);
+        if (m_sequenceMode == SequenceMode::Capturing)
+            finishSequence();
+        return;
+    }
+    m_captureRequestPending = false;
+    QString commitError;
+    if (!m_workflow.commitCapture(pending, &commitError)) {
+        emit message(commitError, true);
         if (m_sequenceMode == SequenceMode::Capturing)
             finishSequence();
         return;
     }
     m_captureRetake = false;
     if (m_sequenceMode == SequenceMode::Capturing && m_sessions.selectedChamber() == chamberBeforeCapture) {
-        ++m_sequenceIndex;
+        const auto *model = m_sessions.selectedModel();
+        const bool chamberCompleted = model && !model->rounds.isEmpty() && model->rounds.last().finished;
+        if (chamberCompleted)
+            ++m_sequenceIndex;
         bool allComplete = true;
         for (int chamber : m_sequenceChambers) {
-            const auto &model = m_sessions.chambers().at(chamber - 1);
-            if (model.rounds.isEmpty() || !model.rounds.last().finished) {
+            const auto &chamberModel = m_sessions.chambers().at(chamber - 1);
+            if (chamberModel.rounds.isEmpty() || !chamberModel.rounds.last().finished) {
                 allComplete = false;
                 break;
             }
@@ -210,17 +287,34 @@ void ApplicationController::handleCapturedFrame(const QImage &image)
             finishSequence(QString::fromUtf8("\xE5\x9B\x9B\xE4\xB8\xAA\xE8\x88\xB1\xE5\xAE\xA4\xE6\x8B\x8D\xE7\x85\xA7\xE5\xAE\x8C\xE6\x88\x90"));
             return;
         }
-        if (!m_workflow.hasActiveRound() || m_sequenceMode == SequenceMode::Capturing) {
-            QTimer::singleShot(80, this, [this] { captureNext(); });
-        }
+        QTimer::singleShot(80, this, [this] { captureNext(); });
     }
 }
 
 void ApplicationController::finishSequence(const QString &detail)
 {
+    if (m_sequenceMode == SequenceMode::Capturing && m_workflow.hasActiveRound())
+        m_workflow.discardActiveRound();
     m_sequenceMode = SequenceMode::None;
+    m_capturePaused = false;
+    m_captureRequestPending = false;
     m_sequenceStatus.clear();
     emit stateChanged();
     if (!detail.isEmpty())
         emit message(detail, false);
+}
+
+void ApplicationController::setCaptureSequencePaused(bool paused)
+{
+    if (m_sequenceMode != SequenceMode::Capturing)
+        return;
+    if (m_capturePaused == paused)
+        return;
+    m_capturePaused = paused;
+    m_sequenceStatus = paused
+        ? QString::fromUtf8("拍照已暂停：当前界面不写入新图片")
+        : QString::fromUtf8("拍照已恢复：从上次成功拍照后的下一个孔继续");
+    emit stateChanged();
+    if (!m_capturePaused)
+        QTimer::singleShot(0, this, [this] { captureNext(); });
 }

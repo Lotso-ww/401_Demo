@@ -26,6 +26,10 @@
 	[
 		{
 			"backtrace" : 0,
+			"id" : "Qt5::Gui::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 0,
 			"id" : "Qt5::moc::@6890427a1f51a3e7e1df"
 		},
 		{
@@ -34,7 +38,11 @@
 		},
 		{
 			"backtrace" : 0,
-			"id" : "Qt5::Gui::@6890427a1f51a3e7e1df"
+			"id" : "Qt5::Widgets::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "Qt5::uic::@6890427a1f51a3e7e1df"
 		},
 		{
 			"backtrace" : 0,
@@ -42,11 +50,19 @@
 		},
 		{
 			"backtrace" : 0,
-			"id" : "Qt5::Widgets::@6890427a1f51a3e7e1df"
+			"id" : "RfidSdk::Reader::@6890427a1f51a3e7e1df"
 		},
 		{
 			"backtrace" : 0,
-			"id" : "Qt5::uic::@6890427a1f51a3e7e1df"
+			"id" : "RfidSdk::Iso15693::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "RfidSdk::Driver::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "IdsPeak::Sdk::@6890427a1f51a3e7e1df"
 		}
 	],
 	"paths" : 

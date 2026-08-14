@@ -1,0 +1,19 @@
+[2026-08-13 17:26:48.581][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260813-172648-580-51000.log
+[2026-08-13 17:26:54.918][WARN][INIT][1] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:26:54.919][WARN][RETRY][1] Reader initialization retry scheduled. delayMs=300
+[2026-08-13 17:26:55.224][WARN][INIT][2] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:26:55.225][WARN][RETRY][2] Reader initialization retry scheduled. delayMs=500
+[2026-08-13 17:26:55.734][WARN][INIT][3] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:26:55.749][ERROR][INIT][3] Reader open failed after all initialization attempts. maxAttempts=3 sdkError=-19
+[2026-08-13 17:27:00.262][WARN][INIT][1] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:27:00.263][WARN][RETRY][1] Reader initialization retry scheduled. delayMs=300
+[2026-08-13 17:27:00.571][WARN][INIT][2] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:27:00.572][WARN][RETRY][2] Reader initialization retry scheduled. delayMs=500
+[2026-08-13 17:27:01.079][WARN][INIT][3] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:27:01.081][ERROR][INIT][3] Reader open failed after all initialization attempts. maxAttempts=3 sdkError=-19
+[2026-08-13 17:27:14.761][WARN][INIT][1] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:27:14.761][WARN][RETRY][1] Reader initialization retry scheduled. delayMs=300
+[2026-08-13 17:27:15.062][WARN][INIT][2] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:27:15.062][WARN][RETRY][2] Reader initialization retry scheduled. delayMs=500
+[2026-08-13 17:27:15.565][WARN][INIT][3] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:27:15.566][ERROR][INIT][3] Reader open failed after all initialization attempts. maxAttempts=3 sdkError=-19

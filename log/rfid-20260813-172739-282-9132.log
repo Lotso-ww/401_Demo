@@ -1,0 +1,16 @@
+[2026-08-13 17:27:39.283][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260813-172739-282-9132.log
+[2026-08-13 17:27:46.691][WARN][INIT][1] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:27:46.691][WARN][RETRY][1] Reader initialization retry scheduled. delayMs=300
+[2026-08-13 17:27:46.994][WARN][INIT][2] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:27:46.995][WARN][RETRY][2] Reader initialization retry scheduled. delayMs=500
+[2026-08-13 17:27:47.501][WARN][INIT][3] Reader open attempt failed. sdkError=-19
+[2026-08-13 17:27:47.504][ERROR][INIT][3] Reader open failed after all initialization attempts. maxAttempts=3 sdkError=-19
+[2026-08-13 17:28:06.311][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeAttempts=1 probeResult=0
+[2026-08-13 17:28:09.525][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-13 17:28:09.595][INFO][SCAN_CHANGE][0] Tag UID appeared in the stability window. currentUids=E0040150B1570EC4 elapsedMs=64 previousUids=NONE
+[2026-08-13 17:28:10.696][INFO][SCAN][0] Stable business scan completed. resultCode=0 uniqueTagCount=1
+[2026-08-13 17:28:15.318][INFO][READ][0] Reading connected tag. uid=E0040150B1570EC4
+[2026-08-13 17:28:15.322][INFO][ATTEMPT][1] Business operation started.
+[2026-08-13 17:28:15.322][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-13 17:28:15.402][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-13 17:28:15.403][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=0004 name=¡¡*** payloadHex=[SENSITIVE_HEX] sdkError=0

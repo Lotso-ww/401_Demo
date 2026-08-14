@@ -11,40 +11,40 @@
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v all"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v all"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Experimental">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v Experimental"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v Experimental"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Nightly">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v Nightly"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v Nightly"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="Continuous">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v Continuous"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v Continuous"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="tls401_demo">
@@ -54,6 +54,8 @@
 				<Option type="0"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
+					<Add option="-DTLS401_HAS_RFID_SDK"/>
+					<Add option="-DTLS401_HAS_IDS_PEAK"/>
 					<Add option="-DQT_CORE_LIB"/>
 					<Add option="-DQT_GUI_LIB"/>
 					<Add option="-DQT_WIDGETS_LIB"/>
@@ -67,6 +69,10 @@
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtANGLE"/>
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtWidgets"/>
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtSql"/>
+					<Add directory="D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/inc"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/generic_sdk/api/include"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/generic_sdk/ipl/include"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/common/include"/>
 					<Add directory="D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\ATLMFC\include"/>
 					<Add directory="D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include"/>
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\ucrt"/>
@@ -76,10 +82,10 @@
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v tls401_demo"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v tls401_demo"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="tls401_demo/fast">
@@ -89,6 +95,8 @@
 				<Option type="0"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
+					<Add option="-DTLS401_HAS_RFID_SDK"/>
+					<Add option="-DTLS401_HAS_IDS_PEAK"/>
 					<Add option="-DQT_CORE_LIB"/>
 					<Add option="-DQT_GUI_LIB"/>
 					<Add option="-DQT_WIDGETS_LIB"/>
@@ -102,6 +110,10 @@
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtANGLE"/>
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtWidgets"/>
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtSql"/>
+					<Add directory="D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/inc"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/generic_sdk/api/include"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/generic_sdk/ipl/include"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/common/include"/>
 					<Add directory="D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\ATLMFC\include"/>
 					<Add directory="D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include"/>
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\ucrt"/>
@@ -111,20 +123,20 @@
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v tls401_demo/fast"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v tls401_demo/fast"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="deploy_runtime">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v deploy_runtime"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v deploy_runtime"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="dependency_probe">
@@ -134,6 +146,8 @@
 				<Option type="1"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
+					<Add option="-DTLS401_HAS_RFID_SDK"/>
+					<Add option="-DTLS401_HAS_IDS_PEAK"/>
 					<Add option="-DQT_CORE_LIB"/>
 					<Add option="-DQT_WIDGETS_LIB"/>
 					<Add option="-DQT_GUI_LIB"/>
@@ -146,6 +160,10 @@
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtGui"/>
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtANGLE"/>
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtSql"/>
+					<Add directory="D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/inc"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/generic_sdk/api/include"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/generic_sdk/ipl/include"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/common/include"/>
 					<Add directory="D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\ATLMFC\include"/>
 					<Add directory="D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include"/>
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\ucrt"/>
@@ -155,10 +173,10 @@
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v dependency_probe"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v dependency_probe"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="dependency_probe/fast">
@@ -168,6 +186,8 @@
 				<Option type="1"/>
 				<Option compiler="msvc8"/>
 				<Compiler>
+					<Add option="-DTLS401_HAS_RFID_SDK"/>
+					<Add option="-DTLS401_HAS_IDS_PEAK"/>
 					<Add option="-DQT_CORE_LIB"/>
 					<Add option="-DQT_WIDGETS_LIB"/>
 					<Add option="-DQT_GUI_LIB"/>
@@ -180,6 +200,10 @@
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtGui"/>
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtANGLE"/>
 					<Add directory="D:/QT5/5.14.2/msvc2017/include/QtSql"/>
+					<Add directory="D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/inc"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/generic_sdk/api/include"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/generic_sdk/ipl/include"/>
+					<Add directory="C:/Program Files/IDS/ids_peak/common/include"/>
 					<Add directory="D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\ATLMFC\include"/>
 					<Add directory="D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include"/>
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\ucrt"/>
@@ -189,10 +213,10 @@
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v dependency_probe/fast"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v dependency_probe/fast"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="tst_workflow">
@@ -225,10 +249,10 @@
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v tst_workflow"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v tst_workflow"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="tst_workflow/fast">
@@ -261,70 +285,70 @@
 					<Add directory="D:\Windows Kits\10\include\10.0.26100.0\cppwinrt"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v tst_workflow/fast"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v tst_workflow/fast"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="test">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v test"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v test"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="edit_cache">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v edit_cache"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v edit_cache"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="rebuild_cache">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v rebuild_cache"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v rebuild_cache"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="tls401_demo_autogen">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v tls401_demo_autogen"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v tls401_demo_autogen"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="dependency_probe_autogen">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v dependency_probe_autogen"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v dependency_probe_autogen"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 			<Target title="tst_workflow_autogen">
 				<Option working_dir="D:/Gitee.code/401_-demo"/>
 				<Option type="4"/>
 				<MakeCommands>
-					<Build command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v tst_workflow_autogen"/>
-					<CompileFile command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
-					<Clean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
-					<DistClean command="D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe -v clean"/>
+					<Build command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v tst_workflow_autogen"/>
+					<CompileFile command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
+					<DistClean command="C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe -v clean"/>
 				</MakeCommands>
 			</Target>
 		</Build>

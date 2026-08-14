@@ -1,0 +1,17 @@
+[2026-08-04 08:52:49.601][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260804-085249-599-54848.log
+[2026-08-04 08:53:12.602][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeResult=0
+[2026-08-04 08:53:20.917][INFO][READ][0] Reading connected tag. uid=E0040150B1566A62
+[2026-08-04 08:53:20.924][INFO][ATTEMPT][1] Business operation started.
+[2026-08-04 08:53:20.924][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-04 08:53:21.559][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-04 08:53:21.560][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***-001 name=ª≠*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-04 08:54:07.425][INFO][WRITE][0] Payload encoded. medicalRecord=***-002 name=¿Ó*** payloadHex=[SENSITIVE_HEX] uid=E0040150B1566A62
+[2026-08-04 08:54:09.568][INFO][ATTEMPT][1] Business operation started.
+[2026-08-04 08:54:09.569][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-04 08:54:10.303][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-04 08:54:10.303][INFO][COMPLETE][1] Tag payload written and verified successfully. medicalRecord=***-002 name=¿Ó*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-04 08:54:12.815][INFO][READ][0] Reading connected tag. uid=E0040150B1566A62
+[2026-08-04 08:54:12.819][INFO][ATTEMPT][1] Business operation started.
+[2026-08-04 08:54:12.820][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-04 08:54:13.441][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-04 08:54:13.442][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***-002 name=¿Ó*** payloadHex=[SENSITIVE_HEX] sdkError=0

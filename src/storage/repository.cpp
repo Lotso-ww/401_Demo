@@ -20,9 +20,6 @@ bool Repository::assignChamber(int chamberNo, const TagProfile &p, const QDateTi
 {
     if (chamberNo < 1 || chamberNo > 4 || !upsertTag(p, error)) return false;
     QSqlQuery q(m_db); if (!m_db.transaction()) { setError(error, m_db.lastError().text()); return false; }
-    q.prepare(QStringLiteral("SELECT chamber_no FROM chamber_assignment WHERE tag_uid=? AND chamber_no<>?")); q.addBindValue(p.uid); q.addBindValue(chamberNo);
-    if (!q.exec()) { m_db.rollback(); setError(error, q.lastError().text()); return false; }
-    if (q.next()) { m_db.rollback(); setError(error, QStringLiteral("UID is already bound to chamber %1.").arg(q.value(0).toInt())); return false; }
     q.prepare(QStringLiteral("UPDATE chamber_assignment SET tag_uid=NULL, identified_at=NULL, updated_at=? WHERE tag_uid=?")); q.addBindValue(QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs)); q.addBindValue(p.uid); if (!q.exec()) { m_db.rollback(); setError(error, q.lastError().text()); return false; }
     q.prepare(QStringLiteral("INSERT INTO chamber_assignment(chamber_no,tag_uid,identified_at,updated_at) VALUES(?,?,?,?) ON CONFLICT(chamber_no) DO UPDATE SET tag_uid=excluded.tag_uid,identified_at=excluded.identified_at,updated_at=excluded.updated_at")); const QString now = QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs); q.addBindValue(chamberNo); q.addBindValue(p.uid); q.addBindValue(identifiedAt.toUTC().toString(Qt::ISODateWithMs)); q.addBindValue(now);
     if (!q.exec() || !m_db.commit()) { m_db.rollback(); setError(error, q.lastError().text()); return false; } return true;
@@ -72,6 +69,45 @@ bool Repository::loadRounds(QVector<ChamberModel> *chambers, QString *error) con
     return true;
 }
 
+bool Repository::loadRoundsForUid(const QString &uid, QVector<CaptureRound> *rounds, QString *error) const
+{
+    if (!rounds || uid.isEmpty()) {
+        setError(error, QStringLiteral("A tag UID and a result container are required."));
+        return false;
+    }
+    rounds->clear();
+    QSqlQuery query(m_db);
+    query.prepare(QStringLiteral("SELECT id,round_no,status FROM capture_round WHERE tag_uid=? ORDER BY round_no,id"));
+    query.addBindValue(uid);
+    if (!query.exec()) { setError(error, query.lastError().text()); return false; }
+    while (query.next()) {
+        CaptureRound round(query.value(1).toInt(), query.value(2).toString() != QStringLiteral("in_progress"), query.value(0).toLongLong());
+        QSqlQuery images(m_db);
+        images.prepare(QStringLiteral("SELECT id,well_no,file_path,captured_at,is_active,file_available FROM capture_image WHERE round_id=? ORDER BY captured_at,id"));
+        images.addBindValue(round.persistentId);
+        if (!images.exec()) { setError(error, images.lastError().text()); return false; }
+        while (images.next()) {
+            const int well = images.value(1).toInt();
+            if (well < 1 || well > 16) continue;
+            WellCapture capture;
+            capture.capturedAt = QDateTime::fromString(images.value(3).toString(), Qt::ISODate);
+            capture.active = images.value(4).toInt() != 0;
+            capture.available = images.value(5).toInt() != 0;
+            const QString absolutePath = QDir(QFileInfo(m_db.databaseName()).absolutePath()).filePath(images.value(2).toString());
+            if (capture.available && (!QFileInfo::exists(absolutePath) || !capture.image.load(absolutePath))) {
+                capture.available = false;
+                QSqlQuery unavailable(m_db);
+                unavailable.prepare(QStringLiteral("UPDATE capture_image SET file_available=0 WHERE id=?"));
+                unavailable.addBindValue(images.value(0));
+                unavailable.exec();
+            }
+            round.history[well - 1].append(capture);
+        }
+        rounds->append(round);
+    }
+    return true;
+}
+
 bool Repository::nextRoundNumber(const QString &tagUid, int *roundNo, QString *error) const
 {
     if (!roundNo || tagUid.isEmpty()) { setError(error, QStringLiteral("A tag UID is required.")); return false; }
@@ -93,6 +129,22 @@ bool Repository::finishRound(qint64 id, const QString &status, QString *error)
     QSqlQuery q(m_db); q.prepare(QStringLiteral("UPDATE capture_round SET status=?, finished_at=? WHERE id=?"));
     q.addBindValue(status); q.addBindValue(QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs)); q.addBindValue(id);
     if (!q.exec()) { setError(error, q.lastError().text()); return false; }
+    return true;
+}
+
+bool Repository::deleteRound(qint64 id, QString *error)
+{
+    if (id <= 0)
+        return true;
+    if (!m_db.transaction()) { setError(error, m_db.lastError().text()); return false; }
+    QSqlQuery images(m_db);
+    images.prepare(QStringLiteral("DELETE FROM capture_image WHERE round_id=?"));
+    images.addBindValue(id);
+    if (!images.exec()) { m_db.rollback(); setError(error, images.lastError().text()); return false; }
+    QSqlQuery round(m_db);
+    round.prepare(QStringLiteral("DELETE FROM capture_round WHERE id=?"));
+    round.addBindValue(id);
+    if (!round.exec() || !m_db.commit()) { m_db.rollback(); setError(error, round.lastError().text()); return false; }
     return true;
 }
 

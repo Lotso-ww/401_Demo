@@ -9,9 +9,9 @@
       "cacheVariables": {
         "CMAKE_PREFIX_PATH": "D:/QT5/5.14.2/msvc2017",
         "CMAKE_CXX_STANDARD": "17",
-        "IDS_PEAK_ROOT": "$env{IDS_PEAK_ROOT}",
-        "RFID_SDK_ROOT": "$env{RFID_SDK_ROOT}",
-        "RFID_RUNTIME_ROOT": "D:/Gitee.code/qt-learning/code/hf_R-Tool/R-TOOL_V1.8.1.4"
+        "IDS_PEAK_ROOT": "C:/Program Files/IDS/ids_peak",
+        "RFID_SDK_ROOT": "D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib",
+        "RFID_RUNTIME_ROOT": "D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug"
       }
     },
     {

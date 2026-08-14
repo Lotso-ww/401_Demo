@@ -17,6 +17,7 @@ public:
     void selectChamber(int chamberNo);
     bool bindProfile(const TagProfile &profile, QString *error = nullptr);
     void clearSelected();
+    bool clearAll(QString *error = nullptr);
     ChamberModel *selectedModel();
 signals:
     void changed();
@@ -30,11 +31,27 @@ private:
 class CaptureWorkflowService : public QObject {
     Q_OBJECT
 public:
+    struct PendingCapture {
+        TagProfile profile;
+        int chamberNo = 0;
+        int roundNo = 0;
+        int wellNo = 0;
+        qint64 roundId = 0;
+        bool retake = false;
+        QDateTime capturedAt;
+        double exposureUs = 0;
+        double gainDb = 0;
+        QImage image;
+    };
     explicit CaptureWorkflowService(ChamberSessionService *sessions, QObject *parent = nullptr);
     void setPersistence(Repository *repository, ImageFileStore *imageStore) { m_repository = repository; m_imageStore = imageStore; }
     bool createRound(QString *error = nullptr);
     bool finishRound();
+    void discardActiveRound();
     bool selectWell(int wellNo);
+    bool prepareCapture(const QImage &image, bool retake, double exposureUs, double gainDb,
+                        PendingCapture *pending, QString *error = nullptr);
+    bool commitCapture(const PendingCapture &pending, QString *error = nullptr);
     bool acceptCapture(const QImage &image, bool retake, double exposureUs = 0, double gainDb = 0, QString *error = nullptr);
     bool acceptCapture(const QImage &image, bool retake, QString *error);
     int currentWell() const { return m_currentWell; }
@@ -53,4 +70,5 @@ private:
     ImageFileStore *m_imageStore = nullptr;
     int m_currentWell = 1;
     qint64 m_activeRoundId = 0;
+    bool persistCompletedRound(CaptureRound *round, const TagProfile &profile, int chamberNo, QString *error);
 };

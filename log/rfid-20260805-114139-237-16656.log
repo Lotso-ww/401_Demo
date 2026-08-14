@@ -1,0 +1,33 @@
+[2026-08-05 11:41:39.238][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260805-114139-237-16656.log
+[2026-08-05 11:41:47.956][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeAttempts=1 probeResult=0
+[2026-08-05 11:42:38.010][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:42:38.084][INFO][SCAN_CHANGE][0] Tag UID appeared in the stability window. currentUids=E0040150B1566A5D elapsedMs=64 previousUids=NONE
+[2026-08-05 11:42:39.191][INFO][SCAN][0] Stable business scan completed. resultCode=0 uniqueTagCount=1
+[2026-08-05 11:42:42.918][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:42:42.922][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:42:42.922][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:42:43.000][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:42:43.001][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***1111 name=Íõ*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-05 11:42:46.571][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:42:46.576][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:42:46.577][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:42:46.608][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:42:46.608][WARN][RETRY][1] Retry scheduled. delayMs=300
+[2026-08-05 11:42:46.910][INFO][ATTEMPT][2] Business operation started.
+[2026-08-05 11:42:46.910][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:42:46.936][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:42:46.936][WARN][RETRY][2] Retry scheduled. delayMs=500
+[2026-08-05 11:42:47.437][INFO][ATTEMPT][3] Business operation started.
+[2026-08-05 11:42:47.439][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:42:47.464][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:42:47.465][ERROR][FAILED][3] Reading ISO15693 system information failed. sdkError=-17
+[2026-08-05 11:42:50.234][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:42:50.245][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:42:50.246][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:42:50.323][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:42:50.324][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***1111 name=Íõ*** payloadHex=[SENSITIVE_HEX] sdkError=0
+[2026-08-05 11:42:52.276][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:42:52.291][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:42:52.292][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:42:52.370][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:42:52.372][INFO][COMPLETE][1] Tag payload read successfully. medicalRecord=***1111 name=Íõ*** payloadHex=[SENSITIVE_HEX] sdkError=0

@@ -20,9 +20,8 @@ BUILD_TESTING:BOOL=ON
 //Path to a program.
 CMAKE_AR:FILEPATH=D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x86/lib.exe
 
-//Build type for single-configuration generators (Makefile Generators,
-// Ninja, etc.). Typical values: Debug, Release, RelWithDebInfo,
-// MinSizeRel; custom build types may also be defined.
+//Choose the type of build, options are: None Debug Release RelWithDebInfo
+// MinSizeRel ...
 CMAKE_BUILD_TYPE:STRING=Debug
 
 //Id string of the compiler for the CodeBlocks IDE. Automatically
@@ -93,7 +92,7 @@ CMAKE_INSTALL_PREFIX:PATH=C:/Program Files (x86)/Tls401RfidCcdDemo
 CMAKE_LINKER:FILEPATH=D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Tools/MSVC/14.16.27023/bin/Hostx86/x86/link.exe
 
 //make program
-CMAKE_MAKE_PROGRAM:FILEPATH=D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe
+CMAKE_MAKE_PROGRAM:FILEPATH=C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe
 
 //Flags used by the linker during the creation of modules during
 // all build types.
@@ -122,7 +121,7 @@ CMAKE_MT:FILEPATH=D:/Windows Kits/10/bin/10.0.26100.0/x86/mt.exe
 // find_package(), find_program(), find_library(), find_file(),
 // and find_path(). Empty by default; intended to be set by the
 // project or the user.
-CMAKE_PREFIX_PATH:STRING=D:/QT5/5.14.2/msvc2017
+CMAKE_PREFIX_PATH:UNINITIALIZED=D:/QT5/5.14.2/msvc2017
 
 //Value Computed by CMake
 CMAKE_PROJECT_COMPAT_VERSION:STATIC=
@@ -245,25 +244,25 @@ DART_TESTING_TIMEOUT:STRING=1500
 GITCOMMAND:FILEPATH=D:/Git/cmd/git.exe
 
 //Path to a library.
-IDS_PEAK_COMFORT_LIBRARY:FILEPATH=IDS_PEAK_COMFORT_LIBRARY-NOTFOUND
+IDS_PEAK_COMFORT_LIBRARY:FILEPATH=C:/Program Files/IDS/ids_peak/comfort_sdk/api/lib/x86_32/ids_peak_comfort_c.lib
 
 //Path to a file.
-IDS_PEAK_COMMON_INCLUDE_DIR:PATH=IDS_PEAK_COMMON_INCLUDE_DIR-NOTFOUND
+IDS_PEAK_COMMON_INCLUDE_DIR:PATH=C:/Program Files/IDS/ids_peak/common/include
 
 //Path to a file.
-IDS_PEAK_INCLUDE_DIR:PATH=IDS_PEAK_INCLUDE_DIR-NOTFOUND
+IDS_PEAK_INCLUDE_DIR:PATH=C:/Program Files/IDS/ids_peak/generic_sdk/api/include
 
 //Path to a file.
-IDS_PEAK_IPL_INCLUDE_DIR:PATH=IDS_PEAK_IPL_INCLUDE_DIR-NOTFOUND
+IDS_PEAK_IPL_INCLUDE_DIR:PATH=C:/Program Files/IDS/ids_peak/generic_sdk/ipl/include
 
 //Path to a library.
-IDS_PEAK_IPL_LIBRARY:FILEPATH=IDS_PEAK_IPL_LIBRARY-NOTFOUND
+IDS_PEAK_IPL_LIBRARY:FILEPATH=C:/Program Files/IDS/ids_peak/generic_sdk/ipl/lib/x86_32/ids_peak_ipl.lib
 
 //Path to a library.
-IDS_PEAK_LIBRARY:FILEPATH=IDS_PEAK_LIBRARY-NOTFOUND
+IDS_PEAK_LIBRARY:FILEPATH=C:/Program Files/IDS/ids_peak/generic_sdk/api/lib/x86_32/ids_peak.lib
 
 //IDS peak SDK root
-IDS_PEAK_ROOT:PATH=
+IDS_PEAK_ROOT:PATH=C:/Program Files/IDS/ids_peak
 
 //Command to build the project
 MAKECOMMAND:STRING="C:\Program Files\CMake\bin\cmake.exe" --build . --config "${CTEST_CONFIGURATION_TYPE}"
@@ -308,22 +307,22 @@ Qt5Widgets_DIR:PATH=D:/QT5/5.14.2/msvc2017/lib/cmake/Qt5Widgets
 Qt5_DIR:PATH=D:/QT5/5.14.2/msvc2017/lib/cmake/Qt5
 
 //Path to a library.
-RFID_DRIVER_LIBRARY:FILEPATH=RFID_DRIVER_LIBRARY-NOTFOUND
+RFID_DRIVER_LIBRARY:FILEPATH=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/device_driver/rfidlib_drv_RD5200.lib
 
 //Path to a library.
-RFID_ISO15693_LIBRARY:FILEPATH=RFID_ISO15693_LIBRARY-NOTFOUND
+RFID_ISO15693_LIBRARY:FILEPATH=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/rfidlib_aip_iso15693.lib
 
 //Path to a library.
-RFID_READER_LIBRARY:FILEPATH=RFID_READER_LIBRARY-NOTFOUND
+RFID_READER_LIBRARY:FILEPATH=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/rfidlib_reader.lib
 
 //RFID x86 runtime root containing rfidlib_reader.dll and Drivers
-RFID_RUNTIME_ROOT:PATH=
+RFID_RUNTIME_ROOT:PATH=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug
 
 //Path to a file.
-RFID_SDK_INCLUDE_DIR:PATH=RFID_SDK_INCLUDE_DIR-NOTFOUND
+RFID_SDK_INCLUDE_DIR:PATH=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/inc
 
 //RFID C++ SDK root
-RFID_SDK_ROOT:PATH=
+RFID_SDK_ROOT:PATH=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib
 
 //Name of the computer/site where compile is being run
 SITE:STRING=LAPTOP-U60U6GU0
@@ -380,6 +379,8 @@ CMAKE_CXX_STANDARD_LIBRARIES-ADVANCED:INTERNAL=1
 //Set initial state for CMake diagnostics; used to persist state
 // set by command-line options across invocations.
 CMAKE_DIAGNOSTIC_INIT:INTERNAL=CMD_AUTHOR=WARN;CMD_DEPRECATED=WARN;CMD_EXPERIMENTAL=WARN;CMD_INSTALL_ABSOLUTE_DESTINATION=IGNORE;CMD_POLICY=WARN;CMD_UNINITIALIZED=IGNORE;CMD_UNUSED_CLI=WARN
+//Path to cache edit program executable.
+CMAKE_EDIT_COMMAND:INTERNAL=C:/Program Files/CMake/bin/cmake-gui.exe
 //Deprecated.  Use -W[no-]error=deprecated instead.
 CMAKE_ERROR_DEPRECATED:INTERNAL=OFF
 //Executable file format
@@ -490,6 +491,10 @@ CTEST_SUBMIT_RETRY_COUNT-ADVANCED:INTERNAL=1
 CTEST_SUBMIT_RETRY_DELAY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: DART_TESTING_TIMEOUT
 DART_TESTING_TIMEOUT-ADVANCED:INTERNAL=1
+//Details about finding IdsPeak
+FIND_PACKAGE_MESSAGE_DETAILS_IdsPeak:INTERNAL=[C:/Program Files/IDS/ids_peak/generic_sdk/api/include][C:/Program Files/IDS/ids_peak/generic_sdk/ipl/include][C:/Program Files/IDS/ids_peak/common/include][C:/Program Files/IDS/ids_peak/generic_sdk/api/lib/x86_32/ids_peak.lib][C:/Program Files/IDS/ids_peak/generic_sdk/ipl/lib/x86_32/ids_peak_ipl.lib][C:/Program Files/IDS/ids_peak/comfort_sdk/api/lib/x86_32/ids_peak_comfort_c.lib][v()]
+//Details about finding RfidSdk
+FIND_PACKAGE_MESSAGE_DETAILS_RfidSdk:INTERNAL=[D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/inc][D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/rfidlib_reader.lib][D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/rfidlib_aip_iso15693.lib][D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/device_driver/rfidlib_drv_RD5200.lib][v()]
 //ADVANCED property for variable: GITCOMMAND
 GITCOMMAND-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: MAKECOMMAND

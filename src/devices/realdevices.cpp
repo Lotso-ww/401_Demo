@@ -3,6 +3,7 @@
 
 #include <QCoreApplication>
 #include <QDir>
+#include <QElapsedTimer>
 #include <QProcessEnvironment>
 #include <QRegularExpression>
 #include <QSet>
@@ -36,7 +37,7 @@ struct RfidObservation { QString uid; quint32 tagType = 0; quint32 antenna = 0; 
 
 static bool inventoryOnce(RFID_READER_HANDLE reader, QVector<RfidObservation> *observations, QString *error)
 {
-    const QByteArray antennaIds(1, char(0));
+    const QByteArray antennaIds(1, char(1));
     RFID_DN_HANDLE params = RDR_CreateInvenParamSpecList();
     if (!params) { if (error) *error = QStringLiteral("Cannot allocate RFID inventory parameters."); return false; }
     ISO15693_CreateInvenParam(params, 0, false, 0, 0);
@@ -57,6 +58,11 @@ static bool inventoryOnce(RFID_READER_HANDLE reader, QVector<RfidObservation> *o
 
 static bool readTagPayload(RFID_READER_HANDLE reader, const RfidObservation &observation, RfidResult *result)
 {
+    if (RDR_SetAcessAntenna(reader, 1) != NO_ERR) {
+        result->error = RfidError::NoTag;
+        result->message = QStringLiteral("RFID antenna 1 could not be selected.");
+        return false;
+    }
     RFID_TAG_HANDLE tag = nullptr;
     QByteArray uid = QByteArray::fromHex(observation.uid.toLatin1());
     if (ISO15693_Connect(reader, observation.tagType, 1, reinterpret_cast<BYTE *>(uid.data()), &tag) != NO_ERR || !tag) { result->error = RfidError::NoTag; result->message = QStringLiteral("RFID tag connection failed."); return false; }
@@ -94,11 +100,14 @@ void RealRfidService::initialize()
 {
 #ifdef TLS401_HAS_RFID_SDK
     const QString driverDir = QDir(QCoreApplication::applicationDirPath()).filePath(QStringLiteral("Drivers"));
-    const QString connection = QProcessEnvironment::systemEnvironment().value(QStringLiteral("TLS401_RFID_CONNECTION"));
+    const QString configuredConnection = QProcessEnvironment::systemEnvironment().value(QStringLiteral("TLS401_RFID_CONNECTION"));
+    const QString connection = configuredConnection.isEmpty()
+        ? QStringLiteral("RDType=RD5200;CommType=COM;COMName=COM9;BaudRate=38400;Frame=8E1;BusAddr=255")
+        : configuredConnection;
     if (RDR_LoadReaderDrivers(reinterpret_cast<LPCTSTR>(const_cast<ushort *>(driverDir.utf16()))) != NO_ERR) { emit stateChanged(DeviceState::Error, QStringLiteral("RFID driver loading failed.")); return; }
     RFID_READER_HANDLE reader = nullptr;
-    const QString conn = connection.isEmpty() ? QStringLiteral("RD5200") : connection;
-    if (RDR_Open(reinterpret_cast<LPCTSTR>(const_cast<ushort *>(conn.utf16())), &reader) != NO_ERR || !reader) { emit stateChanged(DeviceState::Error, QStringLiteral("RFID reader open failed.")); return; }
+    if (RDR_Open(reinterpret_cast<LPCTSTR>(const_cast<ushort *>(connection.utf16())), &reader) != NO_ERR || !reader) { emit stateChanged(DeviceState::Error, QStringLiteral("RFID reader open failed (RD5200 / COM9 / 38400 / 8E1).")); return; }
+    if (RDR_SetAcessAntenna(reader, 1) != NO_ERR) { RDR_Close(reader); emit stateChanged(DeviceState::Error, QStringLiteral("RFID antenna 1 could not be selected.")); return; }
     m_reader = reader; m_ready = true; emit stateChanged(DeviceState::Ready, QStringLiteral("RFID reader connected."));
 #else
     emit stateChanged(DeviceState::Error, QStringLiteral("RFID Win32 SDK is not configured."));
@@ -198,6 +207,9 @@ void RealCameraService::startPreview()
 #ifdef TLS401_HAS_IDS_PEAK
     auto *context = static_cast<CameraContext *>(m_context); if (!context || !context->stream) { emit stateChanged(DeviceState::Error, QStringLiteral("Camera is not connected.")); return; } if (m_thread && m_thread->isRunning()) return; m_running = true; emit stateChanged(DeviceState::Busy, QStringLiteral("Camera preview started.")); m_thread = QThread::create([this, context] {
         try {
+            QElapsedTimer previewTimer;
+            previewTimer.start();
+            qint64 lastPreviewMs = -33;
             const auto payload = context->nodeMap->FindNode<peak::core::nodes::IntegerNode>("PayloadSize")->Value();
             const size_t bufferCount = qMax<size_t>(5, context->stream->NumBuffersAnnouncedMinRequired());
             for (size_t i = 0; i < bufferCount; ++i) context->stream->AllocAndAnnounceBuffer(static_cast<size_t>(payload), nullptr);
@@ -212,7 +224,11 @@ void RealCameraService::startPreview()
                     QImage image(static_cast<uchar *>(rgb.PixelPointer(0,0)), static_cast<int>(rgb.Width()), static_cast<int>(rgb.Height()), static_cast<int>(rgb.Width()) * 3, QImage::Format_RGB888);
                     context->stream->QueueBuffer(buffer);
                     { QMutexLocker lock(&context->mutex); context->latest = image.copy(); }
-                    QMetaObject::invokeMethod(this, [this, image = image.copy()] { emit previewFrame(image); }, Qt::QueuedConnection);
+                    const qint64 elapsed = previewTimer.elapsed();
+                    if (elapsed - lastPreviewMs >= 33) {
+                        lastPreviewMs = elapsed;
+                        QMetaObject::invokeMethod(this, [this, image = image.copy()] { emit previewFrame(image); }, Qt::QueuedConnection);
+                    }
                 } catch (const peak::core::TimeoutException &) { continue; }
                 catch (const peak::core::AbortedException &) { break; }
             }

@@ -35,7 +35,7 @@
 			[
 				{
 					"name" : "HELPSTRING",
-					"value" : "Build type for single-configuration generators (Makefile Generators, Ninja, etc.). Typical values: Debug, Release, RelWithDebInfo, MinSizeRel; custom build types may also be defined."
+					"value" : "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel ..."
 				}
 			],
 			"type" : "STRING",
@@ -300,6 +300,18 @@
 			],
 			"type" : "INTERNAL",
 			"value" : "CMD_AUTHOR=WARN;CMD_DEPRECATED=WARN;CMD_EXPERIMENTAL=WARN;CMD_INSTALL_ABSOLUTE_DESTINATION=IGNORE;CMD_POLICY=WARN;CMD_UNINITIALIZED=IGNORE;CMD_UNUSED_CLI=WARN"
+		},
+		{
+			"name" : "CMAKE_EDIT_COMMAND",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Path to cache edit program executable."
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "C:/Program Files/CMake/bin/cmake-gui.exe"
 		},
 		{
 			"name" : "CMAKE_ERROR_DEPRECATED",
@@ -587,7 +599,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "D:/Program Files (x86)/Microsoft Visual Studio/2017/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe"
+			"value" : "C:/PROGRA~1/MICROS~4/2022/COMMUN~1/Common7/IDE/COMMON~1/MICROS~1/CMake/Ninja/ninja.exe"
 		},
 		{
 			"name" : "CMAKE_MODULE_LINKER_FLAGS",
@@ -718,7 +730,7 @@
 					"value" : "Semicolon-separated list of installation prefixes searched by find_package(), find_program(), find_library(), find_file(), and find_path(). Empty by default; intended to be set by the project or the user."
 				}
 			],
-			"type" : "STRING",
+			"type" : "UNINITIALIZED",
 			"value" : "D:/QT5/5.14.2/msvc2017"
 		},
 		{
@@ -1274,6 +1286,30 @@
 			"value" : "1500"
 		},
 		{
+			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_IdsPeak",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Details about finding IdsPeak"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "[C:/Program Files/IDS/ids_peak/generic_sdk/api/include][C:/Program Files/IDS/ids_peak/generic_sdk/ipl/include][C:/Program Files/IDS/ids_peak/common/include][C:/Program Files/IDS/ids_peak/generic_sdk/api/lib/x86_32/ids_peak.lib][C:/Program Files/IDS/ids_peak/generic_sdk/ipl/lib/x86_32/ids_peak_ipl.lib][C:/Program Files/IDS/ids_peak/comfort_sdk/api/lib/x86_32/ids_peak_comfort_c.lib][v()]"
+		},
+		{
+			"name" : "FIND_PACKAGE_MESSAGE_DETAILS_RfidSdk",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Details about finding RfidSdk"
+				}
+			],
+			"type" : "INTERNAL",
+			"value" : "[D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/inc][D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/rfidlib_reader.lib][D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/rfidlib_aip_iso15693.lib][D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/device_driver/rfidlib_drv_RD5200.lib][v()]"
+		},
+		{
 			"name" : "GITCOMMAND",
 			"properties" : 
 			[
@@ -1299,7 +1335,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "IDS_PEAK_COMFORT_LIBRARY-NOTFOUND"
+			"value" : "C:/Program Files/IDS/ids_peak/comfort_sdk/api/lib/x86_32/ids_peak_comfort_c.lib"
 		},
 		{
 			"name" : "IDS_PEAK_COMMON_INCLUDE_DIR",
@@ -1311,7 +1347,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "IDS_PEAK_COMMON_INCLUDE_DIR-NOTFOUND"
+			"value" : "C:/Program Files/IDS/ids_peak/common/include"
 		},
 		{
 			"name" : "IDS_PEAK_INCLUDE_DIR",
@@ -1323,7 +1359,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "IDS_PEAK_INCLUDE_DIR-NOTFOUND"
+			"value" : "C:/Program Files/IDS/ids_peak/generic_sdk/api/include"
 		},
 		{
 			"name" : "IDS_PEAK_IPL_INCLUDE_DIR",
@@ -1335,7 +1371,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "IDS_PEAK_IPL_INCLUDE_DIR-NOTFOUND"
+			"value" : "C:/Program Files/IDS/ids_peak/generic_sdk/ipl/include"
 		},
 		{
 			"name" : "IDS_PEAK_IPL_LIBRARY",
@@ -1347,7 +1383,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "IDS_PEAK_IPL_LIBRARY-NOTFOUND"
+			"value" : "C:/Program Files/IDS/ids_peak/generic_sdk/ipl/lib/x86_32/ids_peak_ipl.lib"
 		},
 		{
 			"name" : "IDS_PEAK_LIBRARY",
@@ -1359,7 +1395,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "IDS_PEAK_LIBRARY-NOTFOUND"
+			"value" : "C:/Program Files/IDS/ids_peak/generic_sdk/api/lib/x86_32/ids_peak.lib"
 		},
 		{
 			"name" : "IDS_PEAK_ROOT",
@@ -1371,7 +1407,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : ""
+			"value" : "C:/Program Files/IDS/ids_peak"
 		},
 		{
 			"name" : "MAKECOMMAND",
@@ -1579,7 +1615,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "RFID_DRIVER_LIBRARY-NOTFOUND"
+			"value" : "D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/device_driver/rfidlib_drv_RD5200.lib"
 		},
 		{
 			"name" : "RFID_ISO15693_LIBRARY",
@@ -1591,7 +1627,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "RFID_ISO15693_LIBRARY-NOTFOUND"
+			"value" : "D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/rfidlib_aip_iso15693.lib"
 		},
 		{
 			"name" : "RFID_READER_LIBRARY",
@@ -1603,7 +1639,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "RFID_READER_LIBRARY-NOTFOUND"
+			"value" : "D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/lib_win32_debug/rfidlib_reader.lib"
 		},
 		{
 			"name" : "RFID_RUNTIME_ROOT",
@@ -1615,7 +1651,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : ""
+			"value" : "D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug"
 		},
 		{
 			"name" : "RFID_SDK_INCLUDE_DIR",
@@ -1627,7 +1663,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "RFID_SDK_INCLUDE_DIR-NOTFOUND"
+			"value" : "D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/inc"
 		},
 		{
 			"name" : "RFID_SDK_ROOT",
@@ -1639,7 +1675,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : ""
+			"value" : "D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib"
 		},
 		{
 			"name" : "SITE",

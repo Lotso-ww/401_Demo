@@ -20,6 +20,7 @@ private slots:
     void partialRoundIsPersisted();
     void captureParametersAndRoundSequencePersist();
     void restoredActiveRoundSelectsFirstPendingWell();
+    void reidentificationRestoresHistoryInCurrentChamber();
 };
 
 void WorkflowTest::uidBindingIsUnique() {
@@ -53,7 +54,8 @@ void WorkflowTest::sqliteAndPngPersistence()
     QVERIFY(workflow.createRound(&error));
     QImage image(8, 8, QImage::Format_RGB32);
     image.fill(Qt::green);
-    QVERIFY(workflow.acceptCapture(image, false, &error));
+    for (int i = 0; i < 16; ++i)
+        QVERIFY(workflow.acceptCapture(image, false, &error));
     QVERIFY(QDir(dir.path()).entryInfoList(QStringList() << QStringLiteral("*.sqlite"), QDir::Files).size() == 1);
     QDirIterator images(dir.path(), QStringList() << QStringLiteral("*.png"), QDir::Files, QDirIterator::Subdirectories);
     QVERIFY(images.hasNext());
@@ -75,12 +77,12 @@ void WorkflowTest::rfidPayloadDecode()
 
 void WorkflowTest::retakePersistsReplacement()
 {
-    QTemporaryDir dir; QVERIFY(dir.isValid()); Database database; QString error; QVERIFY(database.open(dir.filePath("retake.sqlite"), &error)); Repository repository(database.connection()); ChamberSessionService sessions; sessions.setRepository(&repository); sessions.selectChamber(1); TagProfile p; p.uid="E004010203040507"; p.dishNumber="1"; p.inseminationTime=QDateTime::currentDateTime(); p.femaleName="Test"; p.medicalRecordNumber="MR-2"; p.identifiedAt=QDateTime::currentDateTime(); QVERIFY(sessions.bindProfile(p,&error)); ImageFileStore files(dir.path()); CaptureWorkflowService workflow(&sessions); workflow.setPersistence(&repository,&files); QVERIFY(workflow.createRound(&error)); QImage a(2,2,QImage::Format_RGB32); a.fill(Qt::red); QVERIFY(workflow.acceptCapture(a,false,&error)); QVERIFY(workflow.selectWell(1)); QImage b(2,2,QImage::Format_RGB32); b.fill(Qt::blue); QVERIFY(workflow.acceptCapture(b,true,&error)); QSqlQuery q(database.connection()); QVERIFY(q.exec("SELECT is_active,replaced_image_id FROM capture_image ORDER BY id")); QVERIFY(q.next()); QCOMPARE(q.value(0).toInt(), 0); QVERIFY(q.next()); QCOMPARE(q.value(0).toInt(), 1); QCOMPARE(q.value(1).toLongLong(), 1LL);
+    QTemporaryDir dir; QVERIFY(dir.isValid()); Database database; QString error; QVERIFY(database.open(dir.filePath("retake.sqlite"), &error)); Repository repository(database.connection()); ChamberSessionService sessions; sessions.setRepository(&repository); sessions.selectChamber(1); TagProfile p; p.uid="E004010203040507"; p.dishNumber="1"; p.inseminationTime=QDateTime::currentDateTime(); p.femaleName="Test"; p.medicalRecordNumber="MR-2"; p.identifiedAt=QDateTime::currentDateTime(); QVERIFY(sessions.bindProfile(p,&error)); ImageFileStore files(dir.path()); CaptureWorkflowService workflow(&sessions); workflow.setPersistence(&repository,&files); QVERIFY(workflow.createRound(&error)); QImage a(32,32,QImage::Format_RGB32); a.fill(Qt::red); QVERIFY(workflow.acceptCapture(a,false,&error)); QVERIFY(workflow.selectWell(1)); QImage b(32,32,QImage::Format_RGB32); b.fill(Qt::blue); QVERIFY(workflow.acceptCapture(b,true,&error)); QSqlQuery q(database.connection()); QVERIFY(q.exec("SELECT COUNT(*) FROM capture_image")); QVERIFY(q.next()); QCOMPARE(q.value(0).toInt(), 0);
 }
 
 void WorkflowTest::partialRoundIsPersisted()
 {
-    QTemporaryDir dir; QVERIFY(dir.isValid()); Database database; QString error; QVERIFY(database.open(dir.filePath("partial.sqlite"), &error)); Repository repository(database.connection()); ChamberSessionService sessions; sessions.setRepository(&repository); sessions.selectChamber(1); TagProfile p; p.uid="E004010203040508"; p.dishNumber="1"; p.inseminationTime=QDateTime::currentDateTime(); p.femaleName="Test"; p.medicalRecordNumber="MR-3"; p.identifiedAt=QDateTime::currentDateTime(); QVERIFY(sessions.bindProfile(p,&error)); CaptureWorkflowService workflow(&sessions); workflow.setPersistence(&repository,nullptr); QVERIFY(workflow.createRound(&error)); QVERIFY(workflow.finishRound()); QSqlQuery q(database.connection()); QVERIFY(q.exec("SELECT status FROM capture_round")); QVERIFY(q.next()); QCOMPARE(q.value(0).toString(), QStringLiteral("partial"));
+    QTemporaryDir dir; QVERIFY(dir.isValid()); Database database; QString error; QVERIFY(database.open(dir.filePath("partial.sqlite"), &error)); Repository repository(database.connection()); ChamberSessionService sessions; sessions.setRepository(&repository); sessions.selectChamber(1); TagProfile p; p.uid="E004010203040508"; p.dishNumber="1"; p.inseminationTime=QDateTime::currentDateTime(); p.femaleName="Test"; p.medicalRecordNumber="MR-3"; p.identifiedAt=QDateTime::currentDateTime(); QVERIFY(sessions.bindProfile(p,&error)); CaptureWorkflowService workflow(&sessions); workflow.setPersistence(&repository,nullptr); QVERIFY(workflow.createRound(&error)); QVERIFY(!workflow.finishRound()); QSqlQuery q(database.connection()); QVERIFY(q.exec("SELECT COUNT(*) FROM capture_round")); QVERIFY(q.next()); QCOMPARE(q.value(0).toInt(), 0);
 }
 
 void WorkflowTest::captureParametersAndRoundSequencePersist()
@@ -93,11 +95,11 @@ void WorkflowTest::captureParametersAndRoundSequencePersist()
     ImageFileStore files(dir.path()); CaptureWorkflowService workflow(&sessions); workflow.setPersistence(&repository,&files);
     QVERIFY(workflow.createRound(&error));
     QImage image(2,2,QImage::Format_RGB32); image.fill(Qt::yellow);
-    QVERIFY(workflow.acceptCapture(image, false, 12345.0, 4.5, &error));
+    for (int i = 0; i < 16; ++i)
+        QVERIFY(workflow.acceptCapture(image, false, 12345.0, 4.5, &error));
     QSqlQuery metadata(database.connection()); QVERIFY(metadata.exec("SELECT exposure_us,gain_db FROM capture_image")); QVERIFY(metadata.next()); QCOMPARE(metadata.value(0).toDouble(), 12345.0); QCOMPARE(metadata.value(1).toDouble(), 4.5);
-    QVERIFY(workflow.finishRound());
     QVERIFY(workflow.createRound(&error));
-    QSqlQuery rounds(database.connection()); QVERIFY(rounds.exec("SELECT round_no FROM capture_round ORDER BY id")); QVERIFY(rounds.next()); QCOMPARE(rounds.value(0).toInt(), 1); QVERIFY(rounds.next()); QCOMPARE(rounds.value(0).toInt(), 2);
+    QSqlQuery rounds(database.connection()); QVERIFY(rounds.exec("SELECT round_no FROM capture_round ORDER BY id")); QVERIFY(rounds.next()); QCOMPARE(rounds.value(0).toInt(), 1); QVERIFY(!rounds.next());
 }
 
 void WorkflowTest::restoredActiveRoundSelectsFirstPendingWell()
@@ -110,7 +112,36 @@ void WorkflowTest::restoredActiveRoundSelectsFirstPendingWell()
     ImageFileStore files(dir.path()); CaptureWorkflowService original(&source); original.setPersistence(&repository,&files); QVERIFY(original.createRound(&error));
     QImage image(2,2,QImage::Format_RGB32); image.fill(Qt::cyan); QVERIFY(original.acceptCapture(image, false, &error));
     ChamberSessionService restored; restored.setRepository(&repository); QVector<ChamberModel> chambers = restored.chambers(); QVERIFY(repository.loadAssignments(&chambers,&error)); QVERIFY(repository.loadRounds(&chambers,&error)); restored.restoreProfiles(chambers);
-    CaptureWorkflowService recovered(&restored); recovered.setPersistence(&repository,&files); restored.selectChamber(1); QCOMPARE(recovered.currentWell(), 2);
+    CaptureWorkflowService recovered(&restored); recovered.setPersistence(&repository,&files); restored.selectChamber(1); QCOMPARE(recovered.currentWell(), 1); QCOMPARE(restored.chambers().at(0).rounds.size(), 0);
+}
+
+void WorkflowTest::reidentificationRestoresHistoryInCurrentChamber()
+{
+    QTemporaryDir dir; QVERIFY(dir.isValid());
+    Database database; QString error; QVERIFY(database.open(dir.filePath("reidentify.sqlite"), &error));
+    Repository repository(database.connection());
+    TagProfile profile; profile.uid = "E004010203040511"; profile.dishNumber = "1";
+    profile.inseminationTime = QDateTime::currentDateTime(); profile.femaleName = "Test";
+    profile.medicalRecordNumber = "MR-6"; profile.identifiedAt = QDateTime::currentDateTime();
+    ChamberSessionService original; original.setRepository(&repository); original.selectChamber(1);
+    QVERIFY(original.bindProfile(profile, &error));
+    ImageFileStore files(dir.path()); CaptureWorkflowService capture(&original); capture.setPersistence(&repository, &files);
+    QVERIFY(capture.createRound(&error));
+    QImage image(2, 2, QImage::Format_RGB32); image.fill(Qt::magenta);
+    QVERIFY(capture.acceptCapture(image, false, &error));
+
+    ChamberSessionService restarted; restarted.setRepository(&repository);
+    CaptureWorkflowService recovered(&restarted); recovered.setPersistence(&repository, &files);
+    QVERIFY(!restarted.chambers().at(0).profile.has_value());
+    restarted.selectChamber(3);
+    QVERIFY(restarted.bindProfile(profile, &error));
+    QVERIFY(restarted.chambers().at(2).profile.has_value());
+    QCOMPARE(restarted.chambers().at(2).rounds.size(), 0);
+    QCOMPARE(recovered.currentWell(), 1);
+    QSqlQuery assignment(database.connection());
+    QVERIFY(assignment.exec("SELECT chamber_no FROM chamber_assignment WHERE tag_uid='E004010203040511'"));
+    QVERIFY(assignment.next());
+    QCOMPARE(assignment.value(0).toInt(), 3);
 }
 void WorkflowTest::captureAdvancesAndRetakes() {
     ChamberSessionService sessions; CaptureWorkflowService workflow(&sessions); sessions.selectChamber(1); TagProfile profile; profile.uid = QStringLiteral("uid-1"); QVERIFY(sessions.bindProfile(profile)); QVERIFY(workflow.createRound());

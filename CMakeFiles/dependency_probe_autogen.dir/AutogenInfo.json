@@ -99,7 +99,16 @@
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
 	"INCLUDE_DIR" : "D:/Gitee.code/401_-demo/dependency_probe_autogen/include",
 	"MOC_COMPILATION_FILE" : "D:/Gitee.code/401_-demo/dependency_probe_autogen/mocs_compilation.cpp",
-	"MOC_DEFINITIONS" : [ "QT_CORE_LIB", "QT_GUI_LIB", "QT_SQL_LIB", "QT_WIDGETS_LIB", "WIN32" ],
+	"MOC_DEFINITIONS" : 
+	[
+		"QT_CORE_LIB",
+		"QT_GUI_LIB",
+		"QT_SQL_LIB",
+		"QT_WIDGETS_LIB",
+		"TLS401_HAS_IDS_PEAK",
+		"TLS401_HAS_RFID_SDK",
+		"WIN32"
+	],
 	"MOC_DEPEND_FILTERS" : 
 	[
 		[
@@ -115,7 +124,11 @@
 		"D:/QT5/5.14.2/msvc2017/include/QtWidgets",
 		"D:/QT5/5.14.2/msvc2017/include/QtGui",
 		"D:/QT5/5.14.2/msvc2017/include/QtANGLE",
-		"D:/QT5/5.14.2/msvc2017/include/QtSql"
+		"D:/QT5/5.14.2/msvc2017/include/QtSql",
+		"D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/hf_tagaccess/c++_lib/inc",
+		"C:/Program Files/IDS/ids_peak/generic_sdk/api/include",
+		"C:/Program Files/IDS/ids_peak/generic_sdk/ipl/include",
+		"C:/Program Files/IDS/ids_peak/common/include"
 	],
 	"MOC_MACRO_NAMES" : [ "Q_OBJECT", "Q_GADGET", "Q_NAMESPACE", "Q_NAMESPACE_EXPORT" ],
 	"MOC_OPTIONS" : [],

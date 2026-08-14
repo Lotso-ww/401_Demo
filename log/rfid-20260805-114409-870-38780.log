@@ -1,0 +1,19 @@
+[2026-08-05 11:44:09.871][INFO][INIT][0] Reader drivers loaded. driverCount=32 logFile=D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug/log/rfid-20260805-114409-870-38780.log
+[2026-08-05 11:44:18.895][INFO][INIT][1] Reader opened successfully. antennaCount=64 probeAttempts=1 probeResult=0
+[2026-08-05 11:44:36.010][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:44:36.086][INFO][SCAN_CHANGE][0] Tag UID appeared in the stability window. currentUids=E0040150B1566A5D,E0040150B1566A62 elapsedMs=72 previousUids=NONE
+[2026-08-05 11:44:36.420][INFO][SCAN_CHANGE][0] Tag UID set changed in the stability window. currentUids=E0040150B1566A62 elapsedMs=407 previousUids=E0040150B1566A5D,E0040150B1566A62
+[2026-08-05 11:44:36.623][INFO][SCAN_CHANGE][0] Tag UID set changed in the stability window. currentUids=E0040150B1566A5D,E0040150B1566A62 elapsedMs=610 previousUids=E0040150B1566A62
+[2026-08-05 11:44:37.174][WARN][SCAN][0] Stable business scan did not meet the acceptance condition. resultCode=-10002 uniqueTagCount=2
+[2026-08-05 11:44:40.337][INFO][SCAN][0] Stable business scan started. windowMs=1000
+[2026-08-05 11:44:41.232][INFO][SCAN_CHANGE][0] Tag UID appeared in the stability window. currentUids=E0040150B1566A5D elapsedMs=893 previousUids=NONE
+[2026-08-05 11:44:41.593][INFO][SCAN][0] Stable business scan completed. resultCode=0 uniqueTagCount=1
+[2026-08-05 11:44:46.427][INFO][READ][0] Reading connected tag. uid=E0040150B1566A5D
+[2026-08-05 11:44:46.435][INFO][ATTEMPT][1] Business operation started.
+[2026-08-05 11:44:46.436][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:44:46.461][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:44:46.463][WARN][RETRY][1] Retry scheduled. delayMs=300
+[2026-08-05 11:44:46.763][INFO][ATTEMPT][2] Business operation started.
+[2026-08-05 11:44:46.763][INFO][TAG_SESSION][0] Using the connected tag session.
+[2026-08-05 11:44:46.842][INFO][TAG_SESSION][0] Business access finished; tag session remains connected.
+[2026-08-05 11:44:46.842][INFO][COMPLETE][2] Tag payload read successfully. medicalRecord=***1111 name=Íõ*** payloadHex=[SENSITIVE_HEX] sdkError=0

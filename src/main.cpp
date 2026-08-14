@@ -2,6 +2,7 @@
 #include "ui/mainwindow.h"
 #include <QApplication>
 #include <QFile>
+#include <QTimer>
 
 int main(int argc, char *argv[]) {
     // ApplicationController performs the device shutdown sequence on scope exit.
@@ -11,5 +12,6 @@ int main(int argc, char *argv[]) {
     ApplicationController controller;
     MainWindow window(&controller);
     window.show();
+    QTimer::singleShot(150, &controller, &ApplicationController::initializeDevices);
     return app.exec();
 }

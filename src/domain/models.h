@@ -34,6 +34,8 @@ struct WellCapture {
     QDateTime capturedAt;
     bool active = true;
     bool available = true;
+    double exposureUs = 0;
+    double gainDb = 0;
 };
 
 struct CaptureRound {

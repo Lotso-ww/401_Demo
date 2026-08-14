@@ -19,11 +19,15 @@
 		"major" : 2,
 		"minor" : 11
 	},
-	"id" : "dependency_probe_autogen::@6890427a1f51a3e7e1df",
+	"id" : "tst_workflow_autogen::@6890427a1f51a3e7e1df",
 	"isGeneratorProvided" : true,
-	"name" : "dependency_probe_autogen",
+	"name" : "tst_workflow_autogen",
 	"orderDependencies" : 
 	[
+		{
+			"backtrace" : 0,
+			"id" : "Qt5::Gui::@6890427a1f51a3e7e1df"
+		},
 		{
 			"backtrace" : 0,
 			"id" : "Qt5::moc::@6890427a1f51a3e7e1df"
@@ -34,15 +38,15 @@
 		},
 		{
 			"backtrace" : 0,
+			"id" : "Qt5::uic::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 0,
 			"id" : "Qt5::Sql::@6890427a1f51a3e7e1df"
 		},
 		{
 			"backtrace" : 0,
-			"id" : "Qt5::Widgets::@6890427a1f51a3e7e1df"
-		},
-		{
-			"backtrace" : 0,
-			"id" : "Qt5::uic::@6890427a1f51a3e7e1df"
+			"id" : "Qt5::Test::@6890427a1f51a3e7e1df"
 		}
 	],
 	"paths" : 
@@ -76,7 +80,7 @@
 				0
 			],
 			"isGenerated" : true,
-			"path" : "CMakeFiles/dependency_probe_autogen",
+			"path" : "CMakeFiles/tst_workflow_autogen",
 			"sourceGroupIndex" : 0
 		},
 		{
@@ -86,7 +90,7 @@
 				0
 			],
 			"isGenerated" : true,
-			"path" : "CMakeFiles/dependency_probe_autogen.rule",
+			"path" : "CMakeFiles/tst_workflow_autogen.rule",
 			"sourceGroupIndex" : 1
 		}
 	],

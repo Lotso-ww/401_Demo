@@ -10,7 +10,7 @@ endif()
 find_path(RFID_SDK_INCLUDE_DIR rfidlib.h PATHS "${_rfid_include}" NO_DEFAULT_PATH)
 find_library(RFID_READER_LIBRARY rfidlib_reader PATHS "${_rfid_lib_dir}" NO_DEFAULT_PATH)
 find_library(RFID_ISO15693_LIBRARY rfidlib_aip_iso15693 PATHS "${_rfid_lib_dir}" NO_DEFAULT_PATH)
-find_library(RFID_DRIVER_LIBRARY rfidlib_drv_RL8000 PATHS "${_rfid_lib_dir}/device_driver" "${_rfid_lib_dir}" NO_DEFAULT_PATH)
+find_library(RFID_DRIVER_LIBRARY rfidlib_drv_RD5200 PATHS "${_rfid_lib_dir}/device_driver" "${_rfid_lib_dir}" NO_DEFAULT_PATH)
 
 find_package_handle_standard_args(RfidSdk
     REQUIRED_VARS RFID_SDK_INCLUDE_DIR RFID_READER_LIBRARY RFID_ISO15693_LIBRARY RFID_DRIVER_LIBRARY

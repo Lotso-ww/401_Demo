@@ -219,9 +219,9 @@ build cmake_object_order_depends_target_tls401_demo: phony || tls401_demo_autoge
 
 build CMakeFiles\tls401_demo.dir\tls401_demo_autogen\mocs_compilation.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\tls401_demo_autogen\mocs_compilation.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\tls401_demo_autogen
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -230,9 +230,9 @@ build CMakeFiles\tls401_demo.dir\tls401_demo_autogen\mocs_compilation.cpp.obj: C
 
 build CMakeFiles\tls401_demo.dir\src\main.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\src\main.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\src
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -241,9 +241,9 @@ build CMakeFiles\tls401_demo.dir\src\main.cpp.obj: CXX_COMPILER__tls401_demo_uns
 
 build CMakeFiles\tls401_demo.dir\src\app\workflowservices.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\src\app\workflowservices.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\src\app
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -252,9 +252,9 @@ build CMakeFiles\tls401_demo.dir\src\app\workflowservices.cpp.obj: CXX_COMPILER_
 
 build CMakeFiles\tls401_demo.dir\src\app\applicationcontroller.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\src\app\applicationcontroller.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\src\app
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -263,9 +263,9 @@ build CMakeFiles\tls401_demo.dir\src\app\applicationcontroller.cpp.obj: CXX_COMP
 
 build CMakeFiles\tls401_demo.dir\src\storage\database.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\src\storage\database.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\src\storage
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -274,9 +274,9 @@ build CMakeFiles\tls401_demo.dir\src\storage\database.cpp.obj: CXX_COMPILER__tls
 
 build CMakeFiles\tls401_demo.dir\src\storage\repository.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\src\storage\repository.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\src\storage
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -285,9 +285,9 @@ build CMakeFiles\tls401_demo.dir\src\storage\repository.cpp.obj: CXX_COMPILER__t
 
 build CMakeFiles\tls401_demo.dir\src\storage\imagefilestore.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\src\storage\imagefilestore.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\src\storage
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -296,9 +296,9 @@ build CMakeFiles\tls401_demo.dir\src\storage\imagefilestore.cpp.obj: CXX_COMPILE
 
 build CMakeFiles\tls401_demo.dir\src\devices\realdevices.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\src\devices\realdevices.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\src\devices
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -307,9 +307,9 @@ build CMakeFiles\tls401_demo.dir\src\devices\realdevices.cpp.obj: CXX_COMPILER__
 
 build CMakeFiles\tls401_demo.dir\src\devices\rfidpayloadcodec.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\src\devices\rfidpayloadcodec.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\src\devices
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -318,9 +318,9 @@ build CMakeFiles\tls401_demo.dir\src\devices\rfidpayloadcodec.cpp.obj: CXX_COMPI
 
 build CMakeFiles\tls401_demo.dir\src\ui\mainwindow.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\src\ui\mainwindow.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\src\ui
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -329,9 +329,9 @@ build CMakeFiles\tls401_demo.dir\src\ui\mainwindow.cpp.obj: CXX_COMPILER__tls401
 
 build CMakeFiles\tls401_demo.dir\tls401_demo_autogen\3YJK5W5UP7\qrc_resources.cpp.obj: CXX_COMPILER__tls401_demo_unscanned_Debug D$:\Gitee.code\401_-demo\tls401_demo_autogen\3YJK5W5UP7\qrc_resources.cpp || cmake_object_order_depends_target_tls401_demo
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\tls401_demo_autogen\include -ID:\Gitee.code\401_-demo\src -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
   OBJECT_FILE_DIR = CMakeFiles\tls401_demo.dir\tls401_demo_autogen\3YJK5W5UP7
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
@@ -346,13 +346,13 @@ build CMakeFiles\tls401_demo.dir\tls401_demo_autogen\3YJK5W5UP7\qrc_resources.cp
 #############################################
 # Link the executable tls401_demo.exe
 
-build tls401_demo.exe: CXX_EXECUTABLE_LINKER__tls401_demo_Debug CMakeFiles\tls401_demo.dir\tls401_demo_autogen\mocs_compilation.cpp.obj CMakeFiles\tls401_demo.dir\src\main.cpp.obj CMakeFiles\tls401_demo.dir\src\app\workflowservices.cpp.obj CMakeFiles\tls401_demo.dir\src\app\applicationcontroller.cpp.obj CMakeFiles\tls401_demo.dir\src\storage\database.cpp.obj CMakeFiles\tls401_demo.dir\src\storage\repository.cpp.obj CMakeFiles\tls401_demo.dir\src\storage\imagefilestore.cpp.obj CMakeFiles\tls401_demo.dir\src\devices\realdevices.cpp.obj CMakeFiles\tls401_demo.dir\src\devices\rfidpayloadcodec.cpp.obj CMakeFiles\tls401_demo.dir\src\ui\mainwindow.cpp.obj CMakeFiles\tls401_demo.dir\tls401_demo_autogen\3YJK5W5UP7\qrc_resources.cpp.obj | D$:\QT5\5.14.2\msvc2017\lib\Qt5Widgetsd.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Sqld.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Guid.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Cored.lib D$:\QT5\5.14.2\msvc2017\lib\qtmaind.lib || tls401_demo_autogen
+build tls401_demo.exe: CXX_EXECUTABLE_LINKER__tls401_demo_Debug CMakeFiles\tls401_demo.dir\tls401_demo_autogen\mocs_compilation.cpp.obj CMakeFiles\tls401_demo.dir\src\main.cpp.obj CMakeFiles\tls401_demo.dir\src\app\workflowservices.cpp.obj CMakeFiles\tls401_demo.dir\src\app\applicationcontroller.cpp.obj CMakeFiles\tls401_demo.dir\src\storage\database.cpp.obj CMakeFiles\tls401_demo.dir\src\storage\repository.cpp.obj CMakeFiles\tls401_demo.dir\src\storage\imagefilestore.cpp.obj CMakeFiles\tls401_demo.dir\src\devices\realdevices.cpp.obj CMakeFiles\tls401_demo.dir\src\devices\rfidpayloadcodec.cpp.obj CMakeFiles\tls401_demo.dir\src\ui\mainwindow.cpp.obj CMakeFiles\tls401_demo.dir\tls401_demo_autogen\3YJK5W5UP7\qrc_resources.cpp.obj | D$:\QT5\5.14.2\msvc2017\lib\Qt5Widgetsd.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Sqld.lib D$:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\rfidlib_reader.lib D$:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\rfidlib_aip_iso15693.lib D$:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\device_driver\rfidlib_drv_RD5200.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Guid.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Cored.lib D$:\QT5\5.14.2\msvc2017\lib\qtmaind.lib C$:\Program$ Files\IDS\ids_peak\generic_sdk\api\lib\x86_32\ids_peak.lib C$:\Program$ Files\IDS\ids_peak\generic_sdk\ipl\lib\x86_32\ids_peak_ipl.lib C$:\Program$ Files\IDS\ids_peak\comfort_sdk\api\lib\x86_32\ids_peak_comfort_c.lib || tls401_demo_autogen
   CONFIG = Debug
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd
   LINK_FLAGS = /machine:X86 /debug /INCREMENTAL /subsystem:windows
-  LINK_LIBRARIES = D:\QT5\5.14.2\msvc2017\lib\Qt5Widgetsd.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Sqld.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Guid.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Cored.lib  D:\QT5\5.14.2\msvc2017\lib\qtmaind.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  LINK_LIBRARIES = D:\QT5\5.14.2\msvc2017\lib\Qt5Widgetsd.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Sqld.lib  D:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\rfidlib_reader.lib  D:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\rfidlib_aip_iso15693.lib  D:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\device_driver\rfidlib_drv_RD5200.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Guid.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Cored.lib  D:\QT5\5.14.2\msvc2017\lib\qtmaind.lib  "C:\Program Files\IDS\ids_peak\generic_sdk\api\lib\x86_32\ids_peak.lib"  "C:\Program Files\IDS\ids_peak\generic_sdk\ipl\lib\x86_32\ids_peak_ipl.lib"  "C:\Program Files\IDS\ids_peak\comfort_sdk\api\lib\x86_32\ids_peak_comfort_c.lib"  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   OBJECT_DIR = CMakeFiles\tls401_demo.dir
-  POST_BUILD = cd .
+  POST_BUILD = C:\Windows\system32\cmd.exe /C "cd /D D:\Gitee.code\401_-demo && "C:\Program Files\CMake\bin\cmake.exe" -E copy_directory "C:/Program Files/IDS/ids_peak/generic_sdk/api/lib/x86_32" D:/Gitee.code/401_-demo && "C:\Program Files\CMake\bin\cmake.exe" -E copy_directory "C:/Program Files/IDS/ids_peak/generic_sdk/ipl/lib/x86_32" D:/Gitee.code/401_-demo && "C:\Program Files\CMake\bin\cmake.exe" -E copy_directory "C:/Program Files/IDS/ids_peak/comfort_sdk/api/lib/x86_32" D:/Gitee.code/401_-demo && cd /D D:\Gitee.code\401_-demo && "C:\Program Files\CMake\bin\cmake.exe" -E copy_directory D:/Gitee.code/qt-learning/code/hf_R-Tool/QT_project/build-hf_tagaccess-Desktop_Qt_5_14_2_MSVC2017_32bit-Debug/debug D:/Gitee.code/401_-demo"
   PRE_LINK = cd .
   TARGET_COMPILE_PDB = CMakeFiles\tls401_demo.dir\
   TARGET_FILE = tls401_demo.exe
@@ -377,9 +377,9 @@ build cmake_object_order_depends_target_dependency_probe: phony || dependency_pr
 
 build CMakeFiles\dependency_probe.dir\dependency_probe_autogen\mocs_compilation.cpp.obj: CXX_COMPILER__dependency_probe_unscanned_Debug D$:\Gitee.code\401_-demo\dependency_probe_autogen\mocs_compilation.cpp || cmake_object_order_depends_target_dependency_probe
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\dependency_probe_autogen\include -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\dependency_probe_autogen\include -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\dependency_probe.dir
   OBJECT_FILE_DIR = CMakeFiles\dependency_probe.dir\dependency_probe_autogen
   TARGET_COMPILE_PDB = CMakeFiles\dependency_probe.dir\
@@ -388,9 +388,9 @@ build CMakeFiles\dependency_probe.dir\dependency_probe_autogen\mocs_compilation.
 
 build CMakeFiles\dependency_probe.dir\probes\dependencyprobe.cpp.obj: CXX_COMPILER__dependency_probe_unscanned_Debug D$:\Gitee.code\401_-demo\probes\dependencyprobe.cpp || cmake_object_order_depends_target_dependency_probe
   CONFIG = Debug
-  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB
+  DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_WIDGETS_LIB -DTLS401_HAS_IDS_PEAK -DTLS401_HAS_RFID_SDK
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -std:c++17 -MDd /source-charset:utf-8 /execution-charset:utf-8
-  INCLUDES = -ID:\Gitee.code\401_-demo\dependency_probe_autogen\include -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtSql
+  INCLUDES = -ID:\Gitee.code\401_-demo\dependency_probe_autogen\include -ID:\QT5\5.14.2\msvc2017\include -ID:\QT5\5.14.2\msvc2017\include\QtCore -ID:\QT5\5.14.2\msvc2017\.\mkspecs\win32-msvc -ID:\QT5\5.14.2\msvc2017\include\QtWidgets -ID:\QT5\5.14.2\msvc2017\include\QtGui -ID:\QT5\5.14.2\msvc2017\include\QtANGLE -ID:\QT5\5.14.2\msvc2017\include\QtSql -ID:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\inc -I"C:\Program Files\IDS\ids_peak\generic_sdk\api\include" -I"C:\Program Files\IDS\ids_peak\generic_sdk\ipl\include" -I"C:\Program Files\IDS\ids_peak\common\include"
   OBJECT_DIR = CMakeFiles\dependency_probe.dir
   OBJECT_FILE_DIR = CMakeFiles\dependency_probe.dir\probes
   TARGET_COMPILE_PDB = CMakeFiles\dependency_probe.dir\
@@ -405,11 +405,11 @@ build CMakeFiles\dependency_probe.dir\probes\dependencyprobe.cpp.obj: CXX_COMPIL
 #############################################
 # Link the executable dependency_probe.exe
 
-build dependency_probe.exe: CXX_EXECUTABLE_LINKER__dependency_probe_Debug CMakeFiles\dependency_probe.dir\dependency_probe_autogen\mocs_compilation.cpp.obj CMakeFiles\dependency_probe.dir\probes\dependencyprobe.cpp.obj | D$:\QT5\5.14.2\msvc2017\lib\Qt5Widgetsd.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Sqld.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Guid.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Cored.lib || dependency_probe_autogen
+build dependency_probe.exe: CXX_EXECUTABLE_LINKER__dependency_probe_Debug CMakeFiles\dependency_probe.dir\dependency_probe_autogen\mocs_compilation.cpp.obj CMakeFiles\dependency_probe.dir\probes\dependencyprobe.cpp.obj | D$:\QT5\5.14.2\msvc2017\lib\Qt5Widgetsd.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Sqld.lib D$:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\rfidlib_reader.lib D$:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\rfidlib_aip_iso15693.lib D$:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\device_driver\rfidlib_drv_RD5200.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Guid.lib D$:\QT5\5.14.2\msvc2017\lib\Qt5Cored.lib C$:\Program$ Files\IDS\ids_peak\generic_sdk\api\lib\x86_32\ids_peak.lib C$:\Program$ Files\IDS\ids_peak\generic_sdk\ipl\lib\x86_32\ids_peak_ipl.lib C$:\Program$ Files\IDS\ids_peak\comfort_sdk\api\lib\x86_32\ids_peak_comfort_c.lib || dependency_probe_autogen
   CONFIG = Debug
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd
   LINK_FLAGS = /machine:X86 /debug /INCREMENTAL /subsystem:console
-  LINK_LIBRARIES = D:\QT5\5.14.2\msvc2017\lib\Qt5Widgetsd.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Sqld.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Guid.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Cored.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  LINK_LIBRARIES = D:\QT5\5.14.2\msvc2017\lib\Qt5Widgetsd.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Sqld.lib  D:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\rfidlib_reader.lib  D:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\rfidlib_aip_iso15693.lib  D:\Gitee.code\qt-learning\code\hf_R-Tool\QT_project\hf_tagaccess\c++_lib\lib_win32_debug\device_driver\rfidlib_drv_RD5200.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Guid.lib  D:\QT5\5.14.2\msvc2017\lib\Qt5Cored.lib  "C:\Program Files\IDS\ids_peak\generic_sdk\api\lib\x86_32\ids_peak.lib"  "C:\Program Files\IDS\ids_peak\generic_sdk\ipl\lib\x86_32\ids_peak_ipl.lib"  "C:\Program Files\IDS\ids_peak\comfort_sdk\api\lib\x86_32\ids_peak_comfort_c.lib"  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
   OBJECT_DIR = CMakeFiles\dependency_probe.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
