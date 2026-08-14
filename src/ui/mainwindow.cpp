@@ -522,6 +522,8 @@ QString MainWindow::chamberSummary(const ChamberModel &chamber) const
 
 QString MainWindow::chamberStateText(const ChamberModel &chamber, int activeChamber) const
 {
+    if (m_controller->identifying())
+        return chamber.number == activeChamber ? QString::fromUtf8("\xE6\xAD\xA3\xE5\x9C\xA8\xE8\xAF\x86\xE5\x88\xAB") : QString::fromUtf8("\xE7\xAD\x89\xE5\xBE\x85\xE8\xAF\x86\xE5\x88\xAB");
     if (!chamber.profile)
         return QString::fromUtf8("\xE7\xA9\xBA\xE8\x88\xB1");
     if (chamber.number == activeChamber && m_controller->workflow()->hasActiveRound())
@@ -582,6 +584,9 @@ void MainWindow::refreshHome()
         const auto &chamber = chambers[i];
         card.select->setChecked(chamber.number == activeChamber);
         card.state->setText(chamberStateText(chamber, activeChamber));
+        card.state->setProperty("activity", m_controller->identifying() && chamber.number == activeChamber ? QStringLiteral("recognizing") : QStringLiteral("idle"));
+        card.state->style()->unpolish(card.state);
+        card.state->style()->polish(card.state);
         card.details->setText(chamberSummary(chamber));
         const CaptureRound *round = chamber.rounds.isEmpty() ? nullptr : &chamber.rounds.last();
         for (int well = 0; well < card.wells.size(); ++well) {

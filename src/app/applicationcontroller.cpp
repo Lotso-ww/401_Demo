@@ -88,7 +88,7 @@ ApplicationController::ApplicationController(QObject *parent)
                     emit message(error, true);
             }
             ++m_sequenceIndex;
-            identifyNext();
+            QTimer::singleShot(600, this, [this] { identifyNext(); });
             return;
         }
         if (!result.ok()) {
@@ -168,7 +168,10 @@ void ApplicationController::identifyNext()
         finishSequence(QString::fromUtf8("\xE5\x9B\x9B\xE4\xB8\xAA\xE8\x88\xB1\xE5\xAE\xA4\xE8\xAF\x86\xE5\x88\xAB\xE5\xAE\x8C\xE6\x88\x90"));
         return;
     }
-    m_sessions.selectChamber(m_sequenceChambers.at(m_sequenceIndex));
+    const int chamber = m_sequenceChambers.at(m_sequenceIndex);
+    m_sessions.selectChamber(chamber);
+    m_sequenceStatus = QString::fromUtf8("\xE6\xAD\xA3\xE5\x9C\xA8\xE8\xAF\x86\xE5\x88\xAB\xEF\xBC\x9A%1\xE5\x8F\xB7\xE8\x88\xB1\xEF\xBC\x8C\xE8\xAF\xB7\xE6\x94\xBE\xE7\xBD\xAE RFID \xE6\xA0\x87\xE7\xAD\xBE").arg(chamber);
+    emit stateChanged();
     m_rfid->recognize();
 }
 

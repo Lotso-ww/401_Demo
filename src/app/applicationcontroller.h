@@ -24,6 +24,7 @@ public:
     void identifyAll();
     void startCaptureSequence();
     bool sequenceActive() const { return m_sequenceMode != SequenceMode::None; }
+    bool identifying() const { return m_sequenceMode == SequenceMode::Identifying; }
     QString sequenceStatus() const { return m_sequenceStatus; }
     bool captureSequencePaused() const { return m_capturePaused; }
     void setCaptureSequencePaused(bool paused);

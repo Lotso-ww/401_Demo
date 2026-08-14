@@ -30,6 +30,7 @@ QPushButton#dashboardChamberSelect {
 }
 QPushButton#dashboardChamberSelect:checked { color: #ffffff; }
 QLabel#dashboardChamberState { color: #66d49a; font-size: 13px; font-weight: 600; }
+QLabel#dashboardChamberState[activity="recognizing"] { color: #58aef5; font-size: 15px; }
 QLabel#dashboardChamberDetails { color: #f1f1f1; font-size: 17px; font-weight: 600; }
 QPushButton#homeWellThumbnail {
     background: #101214; border: 1px solid #434a52; border-radius: 3px; color: #a9a9a9;

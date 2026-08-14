@@ -122,7 +122,18 @@ void RealRfidService::recognize()
     m_cancelled = false; emit stateChanged(DeviceState::Busy, QStringLiteral("Reading RFID tag."));
     m_thread = QThread::create([this] {
         QVector<RfidObservation> observations; QString error;
-        for (int i = 0; i < 10 && !m_cancelled; ++i) { if (!inventoryOnce(reinterpret_cast<RFID_READER_HANDLE>(m_reader), &observations, &error)) break; QThread::msleep(80); }
+        for (int i = 0; i < 50 && !m_cancelled; ++i) {
+            QString attemptError;
+            if (!inventoryOnce(reinterpret_cast<RFID_READER_HANDLE>(m_reader), &observations, &attemptError)) {
+                error = attemptError;
+            } else if (!observations.isEmpty()) {
+                error.clear();
+                break;
+            } else {
+                error.clear();
+            }
+            QThread::msleep(100);
+        }
         RfidResult result;
         QSet<QString> uids; for (const auto &item : observations) uids.insert(item.uid);
         if (m_cancelled) { result.error = RfidError::Cancelled; result.message = QStringLiteral("RFID recognition cancelled."); }
