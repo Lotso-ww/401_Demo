@@ -218,11 +218,11 @@ QWidget *MainWindow::buildHomePage()
     actionsFrame->setObjectName(QString::fromUtf8("homeActions"));
     auto *actions = new QHBoxLayout(actionsFrame);
     auto *identify = button(QString::fromUtf8("\xE5\xBC\x80\xE5\xA7\x8B\xE8\xAF\x86\xE5\x88\xAB"), true);
-    auto *captureAll = button(QString::fromUtf8("\xE5\xBC\x80\xE5\xA7\x8B\xE6\x8B\x8D\xE7\x85\xA7"), true);
+    m_captureAllButton = button(QString::fromUtf8("\xE5\xBC\x80\xE5\xA7\x8B\xE6\x8B\x8D\xE7\x85\xA7"), true);
     connect(identify, &QPushButton::clicked, this, [this] { m_controller->identifyAll(); });
-    connect(captureAll, &QPushButton::clicked, this, [this] { m_controller->startCaptureSequence(); });
+    connect(m_captureAllButton, &QPushButton::clicked, this, [this] { m_controller->startCaptureSequence(); });
     actions->addWidget(identify);
-    actions->addWidget(captureAll);
+    actions->addWidget(m_captureAllButton);
     actions->addStretch();
     layout->addWidget(actionsFrame);
     return page;
@@ -528,6 +528,12 @@ QString MainWindow::chamberStateText(const ChamberModel &chamber, int activeCham
         return QString::fromUtf8("\xE7\xA9\xBA\xE8\x88\xB1");
     if (chamber.number == activeChamber && m_controller->workflow()->hasActiveRound())
         return QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE4\xB8\xAD");
+    if (!chamber.rounds.isEmpty()) {
+        const CaptureRound &lastRound = chamber.rounds.last();
+        if (lastRound.finished)
+            return QString::fromUtf8("\xE6\x9C\xAC\xE8\xBD\xAE\xE6\x8B\x8D\xE7\x85\xA7\xE5\xAE\x8C\xE6\x88\x90");
+        return QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE6\x9C\xAA\xE5\xAE\x8C\xE6\x88\x90");
+    }
     return QString::fromUtf8("\xE7\xAD\x89\xE5\xBE\x85\xE6\x8B\x8D\xE7\x85\xA7");
 }
 
@@ -579,6 +585,12 @@ void MainWindow::refreshHome()
     const int activeChamber = m_controller->sessions()->selectedChamber();
     const bool activeRound = m_controller->workflow()->hasActiveRound();
     const int activeWell = m_controller->workflow()->currentWell();
+    if (m_captureAllButton) {
+        m_captureAllButton->setEnabled(m_controller->canStartCapture());
+        m_captureAllButton->setToolTip(m_controller->canStartCapture()
+            ? QString::fromUtf8("开始本次识别对应的拍照流程")
+            : QString::fromUtf8("请先完成 RFID 识别；拍照完成后需重新识别才能开始下一轮"));
+    }
     for (int i = 0; i < m_homeCards.size(); ++i) {
         auto &card = m_homeCards[i];
         const auto &chamber = chambers[i];

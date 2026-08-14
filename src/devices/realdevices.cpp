@@ -113,34 +113,15 @@ struct CameraFrameConfig {
 
 constexpr quint64 kCameraMemoryBudgetBytes = 512ull * 1024 * 1024;
 
-qint64 alignedValue(const std::shared_ptr<peak::core::nodes::IntegerNode> &node, qint64 value)
-{
-    const qint64 minimum = node->Minimum();
-    const qint64 maximum = node->Maximum();
-    const qint64 increment = qMax<qint64>(1, node->Increment());
-    const qint64 bounded = qBound(minimum, value, maximum);
-    return minimum + ((bounded - minimum) / increment) * increment;
-}
-
-bool reduceToCenteredHalfRoi(const std::shared_ptr<peak::core::NodeMap> &nodeMap)
+bool restoreMaximumRoi(const std::shared_ptr<peak::core::NodeMap> &nodeMap)
 {
     try {
         const auto width = nodeMap->FindNode<peak::core::nodes::IntegerNode>("Width");
         const auto height = nodeMap->FindNode<peak::core::nodes::IntegerNode>("Height");
-        const qint64 oldWidth = width->Value();
-        const qint64 oldHeight = height->Value();
-        const qint64 targetWidth = alignedValue(width, oldWidth / 2);
-        const qint64 targetHeight = alignedValue(height, oldHeight / 2);
-        if (targetWidth >= oldWidth && targetHeight >= oldHeight) return false;
-
-        std::shared_ptr<peak::core::nodes::IntegerNode> offsetX;
-        std::shared_ptr<peak::core::nodes::IntegerNode> offsetY;
-        try { offsetX = nodeMap->FindNode<peak::core::nodes::IntegerNode>("OffsetX"); offsetX->SetValue(offsetX->Minimum()); } catch (...) {}
-        try { offsetY = nodeMap->FindNode<peak::core::nodes::IntegerNode>("OffsetY"); offsetY->SetValue(offsetY->Minimum()); } catch (...) {}
-        width->SetValue(targetWidth);
-        height->SetValue(targetHeight);
-        if (offsetX) offsetX->SetValue(alignedValue(offsetX, (oldWidth - targetWidth) / 2));
-        if (offsetY) offsetY->SetValue(alignedValue(offsetY, (oldHeight - targetHeight) / 2));
+        try { const auto offset = nodeMap->FindNode<peak::core::nodes::IntegerNode>("OffsetX"); offset->SetValue(offset->Minimum()); } catch (...) {}
+        try { const auto offset = nodeMap->FindNode<peak::core::nodes::IntegerNode>("OffsetY"); offset->SetValue(offset->Minimum()); } catch (...) {}
+        width->SetValue(width->Maximum());
+        height->SetValue(height->Maximum());
         return true;
     } catch (...) {
         return false;
@@ -149,49 +130,24 @@ bool reduceToCenteredHalfRoi(const std::shared_ptr<peak::core::NodeMap> &nodeMap
 
 CameraFrameConfig configureCameraFrame(const std::shared_ptr<peak::core::NodeMap> &nodeMap)
 {
-    bool usingBinning = false;
-    std::shared_ptr<peak::core::nodes::IntegerNode> binX;
-    std::shared_ptr<peak::core::nodes::IntegerNode> binY;
-    qint64 oldX = 0;
-    qint64 oldY = 0;
-    try {
-        binX = nodeMap->FindNode<peak::core::nodes::IntegerNode>("BinningHorizontal");
-        binY = nodeMap->FindNode<peak::core::nodes::IntegerNode>("BinningVertical");
-        oldX = binX->Value();
-        oldY = binY->Value();
-        if (binX->Minimum() <= 2 && binX->Maximum() >= 2 && binY->Minimum() <= 2 && binY->Maximum() >= 2) {
-            binX->SetValue(2);
-            binY->SetValue(2);
-            usingBinning = binX->Value() == 2 && binY->Value() == 2;
-        }
-        if (!usingBinning) {
-            binX->SetValue(oldX);
-            binY->SetValue(oldY);
-        }
-    } catch (...) {
-        try { if (binX) binX->SetValue(oldX); } catch (...) {}
-        try { if (binY) binY->SetValue(oldY); } catch (...) {}
-        usingBinning = false;
-    }
-
-    if (!usingBinning && !reduceToCenteredHalfRoi(nodeMap))
-        throw std::runtime_error("The camera does not support 2x2 binning or a smaller ROI.");
-
     auto payloadNode = nodeMap->FindNode<peak::core::nodes::IntegerNode>("PayloadSize");
     auto widthNode = nodeMap->FindNode<peak::core::nodes::IntegerNode>("Width");
     auto heightNode = nodeMap->FindNode<peak::core::nodes::IntegerNode>("Height");
+
+    // Earlier versions repeatedly halved the camera ROI whenever preview was
+    // opened. Recover only from that invalid one-line image state; otherwise
+    // preserve the operator's camera resolution and binning settings.
+    if (widthNode->Value() < 32 || heightNode->Value() < 32) {
+        if (!restoreMaximumRoi(nodeMap))
+            throw std::runtime_error("The camera ROI is invalid and could not be restored.");
+    }
+
     qint64 payload = payloadNode->Value();
     qint64 width = widthNode->Value();
     qint64 height = heightNode->Value();
-    while (static_cast<quint64>(payload) * 5ull + static_cast<quint64>(width) * static_cast<quint64>(height) * 6ull > kCameraMemoryBudgetBytes) {
-        if (!reduceToCenteredHalfRoi(nodeMap))
-            throw std::runtime_error("CCD frame size exceeds the 32-bit process memory budget.");
-        payload = payloadNode->Value();
-        width = widthNode->Value();
-        height = heightNode->Value();
-        usingBinning = false;
-    }
-    return {width, height, payload, usingBinning ? QStringLiteral("2x2 binning") : QStringLiteral("centered ROI")};
+    if (static_cast<quint64>(payload) * 5ull + static_cast<quint64>(width) * static_cast<quint64>(height) * 6ull > kCameraMemoryBudgetBytes)
+        throw std::runtime_error("CCD frame size exceeds the 32-bit process memory budget. Reduce the camera resolution in the IDS configuration before starting preview.");
+    return {width, height, payload, QStringLiteral("camera configuration")};
 }
 #endif
 }

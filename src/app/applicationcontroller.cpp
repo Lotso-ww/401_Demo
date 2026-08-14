@@ -4,34 +4,18 @@
 #include "storage/repository.h"
 #include "storage/imagefilestore.h"
 
-#include <QDebug>
+#include <algorithm>
 #include <QDir>
-#include <QSettings>
 #include <QStandardPaths>
 #include <QTimer>
 
 namespace {
 bool isUsableCapture(const QImage &image)
 {
-    if (image.isNull() || image.width() < 32 || image.height() < 32)
-        return false;
-    const QImage gray = image.convertToFormat(QImage::Format_Grayscale8);
-    const int step = qMax(1, qMin(gray.width(), gray.height()) / 64);
-    qint64 sum = 0;
-    qint64 squaredSum = 0;
-    int samples = 0;
-    for (int y = 0; y < gray.height(); y += step) {
-        const uchar *line = gray.constScanLine(y);
-        for (int x = 0; x < gray.width(); x += step) {
-            const int value = line[x];
-            sum += value;
-            squaredSum += value * value;
-            ++samples;
-        }
-    }
-    const double mean = static_cast<double>(sum) / samples;
-    const double variance = static_cast<double>(squaredSum) / samples - mean * mean;
-    return mean >= 12.0 && variance >= 9.0;
+    // An empty well can legitimately produce a dark or nearly uniform frame.
+    // Brightness/variance are not indicators of transport failure and used to
+    // abort an entire automatic sequence for valid empty-well images.
+    return !image.isNull() && image.width() >= 32 && image.height() >= 32;
 }
 }
 
@@ -51,8 +35,6 @@ ApplicationController::ApplicationController(QObject *parent)
         m_imageStore = new ImageFileStore(root);
         m_sessions.setRepository(m_repository);
         m_workflow.setPersistence(m_repository, m_imageStore);
-        QSettings settings;
-        m_clearCaptureHistoryOnShutdown = !settings.value(QStringLiteral("maintenance/clear_capture_history_20260814_complete"), false).toBool();
     } else {
         emit message(QString::fromUtf8("SQLite initialization failed: %1").arg(dbError), true);
     }
@@ -102,8 +84,11 @@ ApplicationController::ApplicationController(QObject *parent)
         QString error;
         if (!m_sessions.bindProfile(result.profile, &error))
             emit message(error, true);
-        else
+        else {
+            m_captureSequenceAuthorized = true;
+            emit stateChanged();
             emit message(result.message, false);
+        }
     });
     connect(&m_workflow, &CaptureWorkflowService::roundCompleted, this, [this] {
         emit message(QString::fromUtf8("16 \xE5\xAD\x94\xE5\xB7\xB2\xE5\xAE\x8C\xE6\x88\x90\xEF\xBC\x8C\xE6\x9C\xAC\xE8\xBD\xAE\xE9\x87\x87\xE9\x9B\x86\xE5\xB7\xB2\xE7\xBB\x93\xE6\x9D\x9F"), false);
@@ -120,14 +105,6 @@ ApplicationController::~ApplicationController()
     if (m_saveThread) {
         m_saveThread->wait();
         m_saveThread = nullptr;
-    }
-    if (m_clearCaptureHistoryOnShutdown && m_repository && m_imageStore) {
-        QString cleanupError;
-        if (m_repository->clearCaptureHistory(&cleanupError) && m_imageStore->clearCaptureStorage(&cleanupError)) {
-            QSettings().setValue(QStringLiteral("maintenance/clear_capture_history_20260814_complete"), true);
-        } else {
-            qWarning() << "Capture history cleanup failed:" << cleanupError;
-        }
     }
     delete m_imageStore;
     delete m_repository;
@@ -163,6 +140,7 @@ void ApplicationController::identifyAll()
         emit message(clearError, true);
         return;
     }
+    m_captureSequenceAuthorized = false;
     m_sequenceChambers = {4, 3, 2, 1};
     m_sequenceIndex = 0;
 
@@ -177,6 +155,8 @@ void ApplicationController::identifyNext()
     if (m_sequenceMode != SequenceMode::Identifying)
         return;
     if (m_sequenceIndex >= m_sequenceChambers.size()) {
+        m_captureSequenceAuthorized = std::any_of(m_sessions.chambers().cbegin(), m_sessions.chambers().cend(),
+                                                  [](const ChamberModel &chamber) { return chamber.profile.has_value(); });
         finishSequence(QString::fromUtf8("\xE5\x9B\x9B\xE4\xB8\xAA\xE8\x88\xB1\xE5\xAE\xA4\xE8\xAF\x86\xE5\x88\xAB\xE5\xAE\x8C\xE6\x88\x90"));
         return;
     }
@@ -193,6 +173,10 @@ void ApplicationController::startCaptureSequence()
         emit message(QString::fromUtf8("\xE8\xAF\x86\xE5\x88\xAB\xE6\x88\x96\xE6\x8B\x8D\xE7\x85\xA7\xE9\x98\x9F\xE5\x88\x97\xE6\xAD\xA3\xE5\x9C\xA8\xE8\xBF\x90\xE8\xA1\x8C"), true);
         return;
     }
+    if (!m_captureSequenceAuthorized) {
+        emit message(QString::fromUtf8("请先完成本轮 RFID 识别后再开始拍照"), true);
+        return;
+    }
     m_sequenceChambers.clear();
     for (int chamber : {4, 3, 2, 1})
         if (m_sessions.chambers().at(chamber - 1).profile)
@@ -203,6 +187,7 @@ void ApplicationController::startCaptureSequence()
     }
     m_sequenceIndex = 0;
     m_sequenceMode = SequenceMode::Capturing;
+    m_captureSequenceAuthorized = false;
     m_capturePaused = false;
     m_previewFrameAvailable = false;
     m_captureRequestPending = false;
@@ -239,7 +224,12 @@ void ApplicationController::captureNext()
     m_sequenceStatus = QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE4\xB8\xAD\xEF\xBC\x9A%1 \xE5\x8F\xB7\xE8\x88\xB1 / %2 \xE5\x8F\xB7\xE5\xAD\x94").arg(chamber).arg(m_workflow.currentWell());
     emit stateChanged();
     m_captureRequestPending = true;
-    m_camera->capture();
+    // Let the current-well state reach the event loop before the synchronous
+    // capture/save path starts, so the operator can see the green marker move.
+    QTimer::singleShot(150, this, [this] {
+        if (m_sequenceMode == SequenceMode::Capturing && !m_capturePaused && m_captureRequestPending)
+            m_camera->capture();
+    });
 }
 
 void ApplicationController::captureCurrent(bool retake)
@@ -308,8 +298,11 @@ void ApplicationController::handleCapturedFrame(const QImage &image)
 
 void ApplicationController::finishSequence(const QString &detail)
 {
-    if (m_sequenceMode == SequenceMode::Capturing && m_workflow.hasActiveRound())
+    const SequenceMode completedMode = m_sequenceMode;
+    if (completedMode == SequenceMode::Capturing && m_workflow.hasActiveRound())
         m_workflow.discardActiveRound();
+    if (completedMode == SequenceMode::Capturing)
+        m_captureSequenceAuthorized = false;
     m_sequenceMode = SequenceMode::None;
     m_capturePaused = false;
     m_captureRequestPending = false;

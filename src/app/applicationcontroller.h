@@ -25,6 +25,7 @@ public:
     void startCaptureSequence();
     bool sequenceActive() const { return m_sequenceMode != SequenceMode::None; }
     bool identifying() const { return m_sequenceMode == SequenceMode::Identifying; }
+    bool canStartCapture() const { return m_captureSequenceAuthorized && !sequenceActive(); }
     QString sequenceStatus() const { return m_sequenceStatus; }
     bool captureSequencePaused() const { return m_capturePaused; }
     void setCaptureSequencePaused(bool paused);
@@ -45,7 +46,6 @@ private:
     DeviceState m_cameraState = DeviceState::Offline;
     bool m_databaseReady = false;
     bool m_devicesInitialized = false;
-    bool m_clearCaptureHistoryOnShutdown = false;
     class Database *m_database = nullptr;
     class Repository *m_repository = nullptr;
     class ImageFileStore *m_imageStore = nullptr;
@@ -57,6 +57,7 @@ private:
     bool m_capturePaused = false;
     bool m_previewFrameAvailable = false;
     bool m_captureRequestPending = false;
+    bool m_captureSequenceAuthorized = false;
     QPointer<QThread> m_saveThread;
     QString m_sequenceStatus;
 };
