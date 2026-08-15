@@ -416,7 +416,19 @@ QWidget *MainWindow::buildWellPage()
     controls->addWidget(play);
     controls->addWidget(next);
     controls->addWidget(speed);
-    controls->addStretch();
+    m_wellPlaybackLabel = label();
+    m_wellPlaybackLabel->setObjectName(QStringLiteral("timelineLabel"));
+    m_wellPlaybackSlider = new QSlider(Qt::Horizontal);
+    m_wellPlaybackSlider->setObjectName(QStringLiteral("timelineSlider"));
+    m_wellPlaybackSlider->setEnabled(false);
+    connect(m_wellPlaybackSlider, &QSlider::valueChanged, this, [this](int index) {
+        if (index != m_historyIndex) {
+            m_historyIndex = index;
+            refreshWell();
+        }
+    });
+    controls->addWidget(m_wellPlaybackLabel);
+    controls->addWidget(m_wellPlaybackSlider, 1);
     browseLayout->addLayout(controls);
     m_wellModes->addWidget(browsePage);
 
@@ -564,6 +576,24 @@ QVector<WellCapture> MainWindow::playbackForWell(int wellNo) const
     return result;
 }
 
+QVector<int> MainWindow::playbackRoundsForWell(int wellNo) const
+{
+    QVector<int> result;
+    const auto *model = m_controller->sessions()->selectedModel();
+    if (!model || wellNo < 1 || wellNo > 16)
+        return result;
+    for (const auto &round : model->rounds) {
+        const auto &captures = round.history[wellNo - 1];
+        for (auto it = captures.crbegin(); it != captures.crend(); ++it) {
+            if (it->active && it->available) {
+                result.push_back(round.number);
+                break;
+            }
+        }
+    }
+    return result;
+}
+
 void MainWindow::setDishRoundIndex(int index)
 {
     const auto *model = m_controller->sessions()->selectedModel();
@@ -633,7 +663,7 @@ void MainWindow::refreshDish()
         if (count && m_dishRoundIndex < 0) m_dishRoundIndex = count - 1;
     }
     m_dishInfo->setText(model && model->profile
-        ? QString::fromUtf8("%1\xE5\x8F\xB7\xE8\x88\xB1%1\xE5\x8F\xB7\xE5\xAD\x94\n\n\xE6\x82\xA3\xE8\x80\x85\xE4\xBF\xA1\xE6\x81\xAF\n\xE5\xA5\xB3\xE6\x96\xB9\xE5\xA7\x93\xE5\x90\x8D\xEF\xBC\x9A\n%2\n\xE7\x94\xB7\xE6\x96\xB9\xE5\xA7\x93\xE5\x90\x8D\xEF\xBC\x9A\n%3\n\xE5\x8F\x91\xE8\x82\xB2\xE5\xA4\xA9\xE6\x95\xB0\xEF\xBC\x9A\n%4\n\xE7\x97\x85\xE5\x8E\x86\xE5\x8F\xB7\xEF\xBC\x9A\n%5\n\n\xE8\x83\x9A\xE8\x83\x8E\xE4\xBF\xA1\xE6\x81\xAF\n\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBFID\xEF\xBC\x9A\n%6\n\xE6\x8E\x88\xE7\xB2\xBE\xE6\x97\xB6\xE9\x97\xB4\xEF\xBC\x9A\n%7\n\xE5\x9F\xB9\xE5\x85\xBB\xE6\x97\xB6\xE9\x97\xB4\xEF\xBC\x9A\n%8h")
+        ? QString::fromUtf8("%1\xE5\x8F\xB7\xE8\x88\xB1\n\n\xE6\x82\xA3\xE8\x80\x85\xE4\xBF\xA1\xE6\x81\xAF\n\xE5\xA5\xB3\xE6\x96\xB9\xE5\xA7\x93\xE5\x90\x8D\xEF\xBC\x9A\n%2\n\xE7\x94\xB7\xE6\x96\xB9\xE5\xA7\x93\xE5\x90\x8D\xEF\xBC\x9A\n%3\n\xE5\x8F\x91\xE8\x82\xB2\xE5\xA4\xA9\xE6\x95\xB0\xEF\xBC\x9A\n%4\n\xE7\x97\x85\xE5\x8E\x86\xE5\x8F\xB7\xEF\xBC\x9A\n%5\n\n\xE8\x83\x9A\xE8\x83\x8E\xE4\xBF\xA1\xE6\x81\xAF\n\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBFID\xEF\xBC\x9A\n%6\n\xE6\x8E\x88\xE7\xB2\xBE\xE6\x97\xB6\xE9\x97\xB4\xEF\xBC\x9A\n%7\n\xE5\x9F\xB9\xE5\x85\xBB\xE6\x97\xB6\xE9\x97\xB4\xEF\xBC\x9A\n%8h")
             .arg(model->number).arg(model->profile->femaleName, model->profile->maleName).arg(developmentDays(*model->profile)).arg(model->profile->medicalRecordNumber, model->profile->dishNumber, model->profile->inseminationTime.toString(QString::fromUtf8("yyyy-MM-dd  HH:mm:ss"))).arg(model->profile->inseminationTime.secsTo(QDateTime::currentDateTime()) / 3600.0, 0, 'f', 2)
         : QString::fromUtf8("\xE8\xAF\xB7\xE9\x80\x89\xE6\x8B\xA9\xE5\xB9\xB6\xE8\xAF\x86\xE5\x88\xAB\xE4\xB8\x80\xE4\xB8\xAA\xE8\x88\xB1\xE5\xAE\xA4\xE3\x80\x82"));
     for (int i = 0; i < m_chamberButtons.size(); ++i) {
@@ -668,12 +698,32 @@ void MainWindow::refreshWell()
         : QString::fromUtf8("%1\xE5\x8F\xB7\xE5\xAD\x94\n\n\xE6\x9A\x82\xE6\x97\xA0\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBF\xE4\xBF\xA1\xE6\x81\xAF").arg(m_detailWell);
     m_wellInfo->setText(details);
     const auto history = playbackForWell(m_detailWell);
+    const auto rounds = playbackRoundsForWell(m_detailWell);
     if (history.isEmpty()) {
+        if (m_wellPlaybackLabel)
+            m_wellPlaybackLabel->setText(QString::fromUtf8("回放：暂无轮次"));
+        if (m_wellPlaybackSlider) {
+            const QSignalBlocker blocker(m_wellPlaybackSlider);
+            m_wellPlaybackSlider->setRange(0, 0);
+            m_wellPlaybackSlider->setValue(0);
+            m_wellPlaybackSlider->setEnabled(false);
+        }
         m_wellImage->setText(QString::fromUtf8("\xE8\xAF\xA5\xE5\xAD\x94\xE6\x9A\x82\xE6\x97\xA0\xE5\x8E\x86\xE5\x8F\xB2\xE5\x9B\xBE\xE5\x83\x8F"));
         m_wellImage->setPixmap({});
         return;
     }
     m_historyIndex = qBound(0, m_historyIndex, history.size() - 1);
+    if (m_wellPlaybackLabel) {
+        const int roundNo = rounds.value(m_historyIndex, m_historyIndex + 1);
+        m_wellPlaybackLabel->setText(QString::fromUtf8("回放：第 %1 轮（%2 / %3）")
+                                     .arg(roundNo).arg(m_historyIndex + 1).arg(history.size()));
+    }
+    if (m_wellPlaybackSlider) {
+        const QSignalBlocker blocker(m_wellPlaybackSlider);
+        m_wellPlaybackSlider->setRange(0, history.size() - 1);
+        m_wellPlaybackSlider->setValue(m_historyIndex);
+        m_wellPlaybackSlider->setEnabled(history.size() > 1);
+    }
     const auto &capture = history[m_historyIndex];
     m_wellImage->setPixmap(QPixmap::fromImage(capture.image).scaled(m_wellImage->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
@@ -692,10 +742,10 @@ void MainWindow::showPage(int index)
             m_calibrationMode->setChecked(false);
         }
     } else if (index == 0) {
-        if (m_controller->sequenceActive())
-            m_controller->camera()->startPreview();
-        else
-            m_controller->camera()->stopPreview();
+        // Keep CCD preview alive between completed rounds.  Stopping it while
+        // returning home could leave the next round waiting for a frame while
+        // the previous acquisition thread was still shutting down.
+        m_controller->camera()->startPreview();
     } else if (m_wellModes && m_currentPage != 2) {
         m_wellModes->setCurrentIndex(0);
         m_playTimer->stop();

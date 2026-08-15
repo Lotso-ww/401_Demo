@@ -328,11 +328,28 @@ void RealCameraService::startPreview()
                         continue;
                     }
                     lastPreviewMs = elapsed;
-                    peak::ipl::Image raw(peak::ipl::PixelFormat(static_cast<peak::ipl::PixelFormatName>(buffer->PixelFormat())), static_cast<uint8_t *>(buffer->BasePtr()), static_cast<size_t>(buffer->Size()), static_cast<size_t>(buffer->Width()), static_cast<size_t>(buffer->Height()));
-                    auto rgb = raw.ConvertTo(peak::ipl::PixelFormat(peak::ipl::PixelFormatName::RGB8));
-                    QImage image(static_cast<uchar *>(rgb.PixelPointer(0,0)), static_cast<int>(rgb.Width()), static_cast<int>(rgb.Height()), static_cast<int>(rgb.Width()) * 3, QImage::Format_RGB888);
+                    const auto pixelFormat = static_cast<peak::ipl::PixelFormatName>(buffer->PixelFormat());
+                    QImage image;
+                    if (pixelFormat == peak::ipl::PixelFormatName::Mono8) {
+                        // U3-308xCP-M delivers Mono8. Converting its full CCD
+                        // frame to RGB triples memory use and can exhaust the
+                        // 32-bit process before a JPEG is written.
+                        QImage mono(static_cast<uchar *>(buffer->BasePtr()), static_cast<int>(buffer->Width()),
+                                    static_cast<int>(buffer->Height()), static_cast<int>(buffer->Width()),
+                                    QImage::Format_Grayscale8);
+                        image = mono.copy();
+                    } else {
+                        peak::ipl::Image raw(peak::ipl::PixelFormat(pixelFormat), static_cast<uint8_t *>(buffer->BasePtr()),
+                                             static_cast<size_t>(buffer->Size()), static_cast<size_t>(buffer->Width()),
+                                             static_cast<size_t>(buffer->Height()));
+                        auto rgb = raw.ConvertTo(peak::ipl::PixelFormat(peak::ipl::PixelFormatName::RGB8));
+                        QImage converted(static_cast<uchar *>(rgb.PixelPointer(0, 0)), static_cast<int>(rgb.Width()),
+                                         static_cast<int>(rgb.Height()), static_cast<int>(rgb.Width()) * 3,
+                                         QImage::Format_RGB888);
+                        image = converted.copy();
+                    }
                     context->stream->QueueBuffer(buffer);
-                    { QMutexLocker lock(&context->mutex); context->latest = image.copy(); }
+                    { QMutexLocker lock(&context->mutex); context->latest = image; }
                     const QImage preview = image.scaled(QSize(960, 720), Qt::KeepAspectRatio, Qt::FastTransformation);
                     QMetaObject::invokeMethod(this, [this, preview] { emit previewFrame(preview); }, Qt::QueuedConnection);
                 } catch (const peak::core::TimeoutException &) {
@@ -369,7 +386,17 @@ void RealCameraService::startPreview()
 #endif
 }
 
-void RealCameraService::stopPreview() { m_running = false; emit stateChanged(m_connected ? DeviceState::Ready : DeviceState::Offline, QStringLiteral("Camera preview stopped.")); }
+void RealCameraService::stopPreview()
+{
+    m_running = false;
+#ifdef TLS401_HAS_IDS_PEAK
+    auto *context = static_cast<CameraContext *>(m_context);
+    if (context && context->stream) {
+        try { context->stream->KillWait(); } catch (...) {}
+    }
+#endif
+    emit stateChanged(m_connected ? DeviceState::Ready : DeviceState::Offline, QStringLiteral("Camera preview stopped."));
+}
 void RealCameraService::setExposure(double value)
 {
 #ifdef TLS401_HAS_IDS_PEAK

@@ -44,6 +44,7 @@ private:
     QString chamberStateText(const ChamberModel &chamber, int activeChamber) const;
     const CaptureRound *displayedDishRound() const;
     QVector<WellCapture> playbackForWell(int wellNo) const;
+    QVector<int> playbackRoundsForWell(int wellNo) const;
     void setDishRoundIndex(int index);
     void updatePreview(const QImage &image);
     ApplicationController *m_controller;
@@ -62,6 +63,8 @@ private:
     QButtonGroup *m_wellGroup = nullptr;
     QLabel *m_dishRoundLabel = nullptr;
     QSlider *m_dishRoundSlider = nullptr;
+    QLabel *m_wellPlaybackLabel = nullptr;
+    QSlider *m_wellPlaybackSlider = nullptr;
     int m_detailWell = 1;
     int m_historyIndex = 0;
     int m_dishRoundIndex = -1;

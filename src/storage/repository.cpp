@@ -4,8 +4,24 @@
 #include <QVariant>
 #include <QDir>
 #include <QFileInfo>
+#include <QImageReader>
 
-namespace { void setError(QString *error, const QString &value) { if (error) *error = value; } }
+namespace {
+void setError(QString *error, const QString &value) { if (error) *error = value; }
+
+bool loadPreviewImage(const QString &path, QImage *image)
+{
+    if (!image)
+        return false;
+    QImageReader reader(path);
+    const QSize sourceSize = reader.size();
+    if (!sourceSize.isValid())
+        return false;
+    reader.setScaledSize(sourceSize.scaled(QSize(800, 600), Qt::KeepAspectRatio));
+    *image = reader.read();
+    return !image->isNull();
+}
+}
 Repository::Repository(QSqlDatabase db) : m_db(std::move(db)) {}
 
 bool Repository::upsertTag(const TagProfile &p, QString *error)
@@ -73,7 +89,7 @@ bool Repository::loadRounds(QVector<ChamberModel> *chambers, QString *error) con
             const int well = images.value(1).toInt(); if (well < 1 || well > 16) continue;
             WellCapture capture; capture.capturedAt = QDateTime::fromString(images.value(3).toString(), Qt::ISODate); capture.active = images.value(4).toInt() != 0; capture.available = images.value(5).toInt() != 0;
             const QString absolutePath = QDir(QFileInfo(m_db.databaseName()).absolutePath()).filePath(images.value(2).toString());
-            if (capture.available && (!QFileInfo::exists(absolutePath) || !capture.image.load(absolutePath))) {
+            if (capture.available && (!QFileInfo::exists(absolutePath) || !loadPreviewImage(absolutePath, &capture.image))) {
                 capture.available = false;
                 QSqlQuery unavailable(m_db);
                 unavailable.prepare(QStringLiteral("UPDATE capture_image SET file_available=0 WHERE id=?"));
@@ -112,7 +128,7 @@ bool Repository::loadRoundsForUid(const QString &uid, QVector<CaptureRound> *rou
             capture.active = images.value(4).toInt() != 0;
             capture.available = images.value(5).toInt() != 0;
             const QString absolutePath = QDir(QFileInfo(m_db.databaseName()).absolutePath()).filePath(images.value(2).toString());
-            if (capture.available && (!QFileInfo::exists(absolutePath) || !capture.image.load(absolutePath))) {
+            if (capture.available && (!QFileInfo::exists(absolutePath) || !loadPreviewImage(absolutePath, &capture.image))) {
                 capture.available = false;
                 QSqlQuery unavailable(m_db);
                 unavailable.prepare(QStringLiteral("UPDATE capture_image SET file_available=0 WHERE id=?"));

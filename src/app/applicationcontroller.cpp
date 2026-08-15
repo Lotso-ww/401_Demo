@@ -319,6 +319,11 @@ void ApplicationController::setCaptureSequencePaused(bool paused)
     if (m_capturePaused == paused)
         return;
     m_capturePaused = paused;
+    // Capture requests are intentionally delayed to show the current-well
+    // marker. Entering a well detail during that delay must cancel the queued
+    // request; otherwise it remains pending forever after resume.
+    if (m_capturePaused)
+        m_captureRequestPending = false;
     m_sequenceStatus = paused
         ? QString::fromUtf8("拍照已暂停：当前界面不写入新图片")
         : QString::fromUtf8("拍照已恢复：从上次成功拍照后的下一个孔继续");
