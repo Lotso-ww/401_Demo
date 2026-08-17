@@ -187,7 +187,8 @@ QWidget *MainWindow::buildHomePage()
             wellButton->setMinimumSize(46, 48);
             wellButton->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
             connect(wellButton, &QPushButton::clicked, this, [this, chamberNo] {
-                m_controller->sessions()->selectChamber(chamberNo);
+                if (!selectChamberForInspection(chamberNo))
+                    return;
                 const auto *model = m_controller->sessions()->selectedModel();
                 if (model && model->profile)
                     showPage(1);
@@ -203,7 +204,7 @@ QWidget *MainWindow::buildHomePage()
             wellGrid->setColumnStretch(column, 1);
         cardLayout->addLayout(wellGrid, 1);
         connect(card.select, &QPushButton::clicked, this, [this, chamberNo] {
-            m_controller->sessions()->selectChamber(chamberNo);
+            selectChamberForInspection(chamberNo);
         });
         m_homeCards.push_back(card);
         cardGrid->addWidget(card.frame, (chamberNo - 1) / 2, (chamberNo - 1) % 2);
@@ -247,7 +248,7 @@ QWidget *MainWindow::buildDishPage()
         item->setCheckable(true);
         item->setMinimumHeight(118);
         m_chamberButtons.push_back(item);
-        connect(item, &QPushButton::clicked, this, [this, i] { m_controller->sessions()->selectChamber(i); });
+        connect(item, &QPushButton::clicked, this, [this, i] { selectChamberForInspection(i); });
         sideLayout->addWidget(item);
     }
     layout->addWidget(side, 130);
@@ -540,13 +541,9 @@ QString MainWindow::chamberStateText(const ChamberModel &chamber, int activeCham
         return QString::fromUtf8("\xE7\xA9\xBA\xE8\x88\xB1");
     if (chamber.number == activeChamber && m_controller->workflow()->hasActiveRound())
         return QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE4\xB8\xAD");
-    if (!chamber.rounds.isEmpty()) {
-        const CaptureRound &lastRound = chamber.rounds.last();
-        if (lastRound.finished)
-            return QString::fromUtf8("\xE6\x9C\xAC\xE8\xBD\xAE\xE6\x8B\x8D\xE7\x85\xA7\xE5\xAE\x8C\xE6\x88\x90");
+    if (!chamber.rounds.isEmpty() && !chamber.rounds.last().finished)
         return QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE6\x9C\xAA\xE5\xAE\x8C\xE6\x88\x90");
-    }
-    return QString::fromUtf8("\xE7\xAD\x89\xE5\xBE\x85\xE6\x8B\x8D\xE7\x85\xA7");
+    return QString::fromUtf8("\xE7\xAD\x89\xE5\xBE\x85\xE6\x9C\xAC\xE8\xBD\xAE\xE6\x8B\x8D\xE7\x85\xA7");
 }
 
 const CaptureRound *MainWindow::displayedDishRound() const
@@ -626,7 +623,12 @@ void MainWindow::refreshHome()
         const auto &chamber = chambers[i];
         card.select->setChecked(chamber.number == activeChamber);
         card.state->setText(chamberStateText(chamber, activeChamber));
-        card.state->setProperty("activity", m_controller->identifying() && chamber.number == activeChamber ? QStringLiteral("recognizing") : QStringLiteral("idle"));
+        card.state->setProperty("activity",
+                                m_controller->identifying() && chamber.number == activeChamber
+                                    ? QStringLiteral("recognizing")
+                                    : activeRound && chamber.number == activeChamber
+                                        ? QStringLiteral("capturing")
+                                        : QStringLiteral("idle"));
         card.state->style()->unpolish(card.state);
         card.state->style()->polish(card.state);
         card.details->setText(chamberSummary(chamber));
@@ -754,6 +756,18 @@ void MainWindow::showPage(int index)
     m_currentPage = index;
     m_title->setText(index == 0 ? QString::fromUtf8("TLS401 \xE8\x83\x9A\xE8\x83\x8E\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9B\x91\xE6\x8E\xA7") : index == 1 ? QString::fromUtf8("\xE5\x9F\xB9\xE5\x85\xBB\xE7\x9A\xBF\xE8\xAF\xA6\xE6\x83\x85") : QString::fromUtf8("\xE5\x9F\xB9\xE5\x85\xBB\xE5\xAD\x94\xE8\xAF\xA6\xE6\x83\x85"));
     refreshAll();
+}
+
+bool MainWindow::selectChamberForInspection(int chamberNo)
+{
+    if (m_controller->identifying()) {
+        showMessage(QStringLiteral("RFID identification is in progress; wait before switching chambers."), true);
+        return false;
+    }
+    if (m_controller->sequenceActive())
+        m_controller->setCaptureSequencePaused(true);
+    m_controller->sessions()->selectChamber(chamberNo);
+    return true;
 }
 
 void MainWindow::showMessage(const QString &text, bool error)

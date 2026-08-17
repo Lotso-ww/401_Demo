@@ -50,6 +50,9 @@ src/app/workflowservices.h
     src/ui/mainwindow.ui
     resources/resources.qrc
 )
+# Keep the internal CMake target descriptive while giving the distributed
+# application the product name users should launch.
+set_target_properties(tls401_demo PROPERTIES OUTPUT_NAME "401_demo")
 target_include_directories(tls401_demo PRIVATE src)
 target_link_libraries(tls401_demo PRIVATE Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Sql)
 target_compile_definitions(tls401_demo PRIVATE

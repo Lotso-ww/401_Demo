@@ -47,6 +47,7 @@ private:
     QVector<int> playbackRoundsForWell(int wellNo) const;
     void setDishRoundIndex(int index);
     void updatePreview(const QImage &image);
+    bool selectChamberForInspection(int chamberNo);
     ApplicationController *m_controller;
     Ui::MainWindow *ui;
     QStackedWidget *m_pages = nullptr;

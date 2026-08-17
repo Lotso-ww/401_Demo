@@ -52,7 +52,17 @@ ApplicationController::ApplicationController(QObject *parent)
             emit message(QString::fromUtf8("CCD\xEF\xBC\x9A%1").arg(detail), true);
     });
     connect(m_camera, &ICameraService::captureFailed, this, [this](const QString &reason) {
+        if (!m_captureRequestPending)
+            return;
+        const bool discardResult = m_discardPendingCaptureResult;
         m_captureRequestPending = false;
+        m_captureRequestDispatched = false;
+        m_discardPendingCaptureResult = false;
+        if (discardResult) {
+            if (m_sequenceMode == SequenceMode::Capturing && !m_capturePaused)
+                QTimer::singleShot(0, this, [this] { captureNext(); });
+            return;
+        }
         emit message(QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE5\xA4\xB1\xE8\xB4\xA5\xEF\xBC\x9A%1").arg(reason), true);
         if (m_sequenceMode == SequenceMode::Capturing)
             finishSequence();
@@ -187,6 +197,7 @@ void ApplicationController::startCaptureSequence()
     }
     m_sequenceIndex = 0;
     m_sequenceMode = SequenceMode::Capturing;
+    m_completedCaptureChambers.clear();
     m_captureSequenceAuthorized = false;
     m_capturePaused = false;
     m_previewFrameAvailable = false;
@@ -224,11 +235,18 @@ void ApplicationController::captureNext()
     m_sequenceStatus = QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE4\xB8\xAD\xEF\xBC\x9A%1 \xE5\x8F\xB7\xE8\x88\xB1 / %2 \xE5\x8F\xB7\xE5\xAD\x94").arg(chamber).arg(m_workflow.currentWell());
     emit stateChanged();
     m_captureRequestPending = true;
+    m_captureRequestDispatched = false;
+    m_discardPendingCaptureResult = false;
+    const quint64 requestToken = ++m_captureRequestToken;
     // Let the current-well state reach the event loop before the synchronous
     // capture/save path starts, so the operator can see the green marker move.
-    QTimer::singleShot(150, this, [this] {
-        if (m_sequenceMode == SequenceMode::Capturing && !m_capturePaused && m_captureRequestPending)
+    QTimer::singleShot(150, this, [this, requestToken] {
+        if (m_sequenceMode == SequenceMode::Capturing && !m_capturePaused
+            && m_captureRequestPending && !m_captureRequestDispatched
+            && requestToken == m_captureRequestToken) {
+            m_captureRequestDispatched = true;
             m_camera->capture();
+        }
     });
 }
 
@@ -244,11 +262,25 @@ void ApplicationController::captureCurrent(bool retake)
     }
     m_captureRetake = retake;
     m_captureRequestPending = true;
+    m_captureRequestDispatched = true;
+    m_discardPendingCaptureResult = false;
+    ++m_captureRequestToken;
     m_camera->capture();
 }
 
 void ApplicationController::handleCapturedFrame(const QImage &image)
 {
+    if (!m_captureRequestPending)
+        return;
+    if (m_discardPendingCaptureResult) {
+        m_captureRequestPending = false;
+        m_captureRequestDispatched = false;
+        m_discardPendingCaptureResult = false;
+        if (m_sequenceMode == SequenceMode::Capturing && !m_capturePaused)
+            QTimer::singleShot(0, this, [this] { captureNext(); });
+        return;
+    }
+    m_captureRequestDispatched = false;
     const int chamberBeforeCapture = m_sessions.selectedChamber();
     if (!isUsableCapture(image)) {
         m_captureRequestPending = false;
@@ -278,17 +310,11 @@ void ApplicationController::handleCapturedFrame(const QImage &image)
     if (m_sequenceMode == SequenceMode::Capturing && m_sessions.selectedChamber() == chamberBeforeCapture) {
         const auto *model = m_sessions.selectedModel();
         const bool chamberCompleted = model && !model->rounds.isEmpty() && model->rounds.last().finished;
-        if (chamberCompleted)
+        if (chamberCompleted) {
+            m_completedCaptureChambers.insert(chamberBeforeCapture);
             ++m_sequenceIndex;
-        bool allComplete = true;
-        for (int chamber : m_sequenceChambers) {
-            const auto &chamberModel = m_sessions.chambers().at(chamber - 1);
-            if (chamberModel.rounds.isEmpty() || !chamberModel.rounds.last().finished) {
-                allComplete = false;
-                break;
-            }
         }
-        if (allComplete) {
+        if (m_completedCaptureChambers.size() == m_sequenceChambers.size()) {
             finishSequence(QString::fromUtf8("\xE5\x9B\x9B\xE4\xB8\xAA\xE8\x88\xB1\xE5\xAE\xA4\xE6\x8B\x8D\xE7\x85\xA7\xE5\xAE\x8C\xE6\x88\x90"));
             return;
         }
@@ -306,6 +332,9 @@ void ApplicationController::finishSequence(const QString &detail)
     m_sequenceMode = SequenceMode::None;
     m_capturePaused = false;
     m_captureRequestPending = false;
+    m_captureRequestDispatched = false;
+    m_discardPendingCaptureResult = false;
+    ++m_captureRequestToken;
     m_sequenceStatus.clear();
     emit stateChanged();
     if (!detail.isEmpty())
@@ -319,11 +348,16 @@ void ApplicationController::setCaptureSequencePaused(bool paused)
     if (m_capturePaused == paused)
         return;
     m_capturePaused = paused;
-    // Capture requests are intentionally delayed to show the current-well
-    // marker. Entering a well detail during that delay must cancel the queued
-    // request; otherwise it remains pending forever after resume.
-    if (m_capturePaused)
-        m_captureRequestPending = false;
+    // A delayed request can be invalidated immediately. A request already sent
+    // to the camera must wait for its terminal signal, then discard that frame.
+    if (m_capturePaused && m_captureRequestPending) {
+        if (m_captureRequestDispatched) {
+            m_discardPendingCaptureResult = true;
+        } else {
+            m_captureRequestPending = false;
+            ++m_captureRequestToken;
+        }
+    }
     m_sequenceStatus = paused
         ? QString::fromUtf8("拍照已暂停：当前界面不写入新图片")
         : QString::fromUtf8("拍照已恢复：从上次成功拍照后的下一个孔继续");

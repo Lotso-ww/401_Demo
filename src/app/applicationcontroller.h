@@ -3,6 +3,7 @@
 #include "app/workflowservices.h"
 #include "devices/deviceinterfaces.h"
 #include <QPointer>
+#include <QSet>
 #include <QThread>
 #include <QVector>
 
@@ -50,6 +51,7 @@ private:
     class Repository *m_repository = nullptr;
     class ImageFileStore *m_imageStore = nullptr;
     QVector<int> m_sequenceChambers;
+    QSet<int> m_completedCaptureChambers;
     int m_sequenceIndex = 0;
 
     SequenceMode m_sequenceMode = SequenceMode::None;
@@ -57,7 +59,10 @@ private:
     bool m_capturePaused = false;
     bool m_previewFrameAvailable = false;
     bool m_captureRequestPending = false;
+    bool m_captureRequestDispatched = false;
+    bool m_discardPendingCaptureResult = false;
     bool m_captureSequenceAuthorized = false;
+    quint64 m_captureRequestToken = 0;
     QPointer<QThread> m_saveThread;
     QString m_sequenceStatus;
 };
