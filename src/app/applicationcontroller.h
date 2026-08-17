@@ -26,6 +26,7 @@ public:
     void startCaptureSequence();
     bool sequenceActive() const { return m_sequenceMode != SequenceMode::None; }
     bool identifying() const { return m_sequenceMode == SequenceMode::Identifying; }
+    bool chamberCompletedInCurrentCapture(int chamberNo) const { return m_completedCaptureChambers.contains(chamberNo); }
     bool canStartCapture() const { return m_captureSequenceAuthorized && !sequenceActive(); }
     QString sequenceStatus() const { return m_sequenceStatus; }
     bool captureSequencePaused() const { return m_capturePaused; }

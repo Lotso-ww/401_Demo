@@ -151,6 +151,7 @@ void ApplicationController::identifyAll()
         return;
     }
     m_captureSequenceAuthorized = false;
+    m_completedCaptureChambers.clear();
     m_sequenceChambers = {4, 3, 2, 1};
     m_sequenceIndex = 0;
 

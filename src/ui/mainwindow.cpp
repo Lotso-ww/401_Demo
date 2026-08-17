@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QButtonGroup>
+#include <QByteArray>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QFrame>
@@ -541,6 +542,8 @@ QString MainWindow::chamberStateText(const ChamberModel &chamber, int activeCham
         return QString::fromUtf8("\xE7\xA9\xBA\xE8\x88\xB1");
     if (chamber.number == activeChamber && m_controller->workflow()->hasActiveRound())
         return QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE4\xB8\xAD");
+    if (m_controller->chamberCompletedInCurrentCapture(chamber.number))
+        return QString::fromUtf8(QByteArray::fromHex("E69CACE8BDAEE68B8DE785A7E5AE8CE68890"));
     if (!chamber.rounds.isEmpty() && !chamber.rounds.last().finished)
         return QString::fromUtf8("\xE6\x8B\x8D\xE7\x85\xA7\xE6\x9C\xAA\xE5\xAE\x8C\xE6\x88\x90");
     return QString::fromUtf8("\xE7\xAD\x89\xE5\xBE\x85\xE6\x9C\xAC\xE8\xBD\xAE\xE6\x8B\x8D\xE7\x85\xA7");
