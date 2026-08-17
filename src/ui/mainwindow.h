@@ -64,6 +64,7 @@ private:
     QButtonGroup *m_wellGroup = nullptr;
     QLabel *m_dishRoundLabel = nullptr;
     QSlider *m_dishRoundSlider = nullptr;
+    QPushButton *m_dishPlayButton = nullptr;
     QLabel *m_wellPlaybackLabel = nullptr;
     QSlider *m_wellPlaybackSlider = nullptr;
     int m_detailWell = 1;

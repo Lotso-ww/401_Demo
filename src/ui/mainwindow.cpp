@@ -300,6 +300,7 @@ QWidget *MainWindow::buildDishPage()
     auto *previousRound = button(QStringLiteral("|<"));
     auto *playRounds = button(QStringLiteral(">"));
     auto *nextRound = button(QStringLiteral(">|"));
+    m_dishPlayButton = playRounds;
     for (auto *control : {previousRound, playRounds, nextRound}) {
         control->setObjectName(QStringLiteral("mediaButton"));
         control->setFixedSize(34, 30);
@@ -317,10 +318,10 @@ QWidget *MainWindow::buildDishPage()
     m_dishRoundSlider->setObjectName(QStringLiteral("timelineSlider"));
     connect(previousRound, &QPushButton::clicked, this, [this] { setDishRoundIndex(m_dishRoundIndex - 1); });
     connect(nextRound, &QPushButton::clicked, this, [this] { setDishRoundIndex(m_dishRoundIndex + 1); });
-    connect(playRounds, &QPushButton::clicked, this, [this, playRounds] {
+    connect(playRounds, &QPushButton::clicked, this, [this] {
         const bool playing = !m_dishPlayTimer->isActive();
         if (playing) m_dishPlayTimer->start(); else m_dishPlayTimer->stop();
-        playRounds->setText(playing ? QStringLiteral("||") : QStringLiteral(">"));
+        m_dishPlayButton->setText(playing ? QStringLiteral("||") : QStringLiteral(">"));
     });
     connect(speed, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int index) {
         m_dishPlayTimer->setInterval(index == 0 ? 500 : index == 1 ? 250 : index == 2 ? 150 : 100);
@@ -735,7 +736,11 @@ void MainWindow::refreshWell()
 
 void MainWindow::showPage(int index)
 {
-    if (index != 1) m_dishPlayTimer->stop();
+    if (index != 1) {
+        m_dishPlayTimer->stop();
+        if (m_dishPlayButton)
+            m_dishPlayButton->setText(QStringLiteral(">"));
+    }
     if (m_currentPage == 2 && index != 2)
         m_controller->setCaptureSequencePaused(false);
     if (index == 2) {
