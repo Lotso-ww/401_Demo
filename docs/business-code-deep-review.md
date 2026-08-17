@@ -232,7 +232,7 @@ emit changed();
 - Service 是内存会话的唯一写入口，UI 不直接修改 `ChamberModel`。
 - `changed` 和 `selectionChanged` 分开，允许工作流对“选择变化”做更精确响应。
 - `selectedModel()` 返回内部可变指针，便利但削弱封装。长期可以提供受控命令，或至少区分 const/non-const 访问。
-- `restoreProfiles()`、`Repository::loadAssignments()` 和 `loadRounds()` 当前没有从控制器调用，所以应用重启后并不会自动恢复首页上的舱室绑定。这是“接口已存在但启动链未接通”。
+- 当前采用的是 **按 UID 重新识别恢复历史**：应用重启后，首页不直接恢复上次舱位；当同一 RFID UID 再次被识别并执行 `bindProfile()` 时，`loadRoundsForUid()` 会把该培养皿的历史轮次加载回来。`restoreProfiles()`、`Repository::loadAssignments()` 和 `loadRounds()` 是早期“启动即恢复舱位”方案留下的接口，现行主流程没有调用它们，但这不影响当前恢复方式。
 
 ## 5. CaptureWorkflowService：16 孔采集事务
 
@@ -310,7 +310,7 @@ sequenceDiagram
 
 - `hasActiveRound() const` 和 `wellStates() const` 通过 `const_cast` 调用非 const 的 `activeRound()`。这说明查询接口的 const 设计不完整，应增加 `const CaptureRound *activeRound() const` 重载。
 - `commitCapture()` 在重拍时把旧项设为 inactive，并立即删除旧暂存文件；完成轮次时只持久化每孔 `.last()`。因此数据库的 `replaced_image_id` 能力并未真正用于当前轮次内的重拍历史。
-- 暂存图片没有数据库索引。进程崩溃后 staging 文件仍在，但系统不知道属于哪个未完成轮次，缺少启动恢复或垃圾清理策略。
+- 暂存图片没有数据库索引。进程崩溃后 staging 文件仍在，但系统不知道属于哪个未完成轮次；这是“未完成轮次的临时文件清理/恢复”问题，不是已完成历史轮次的 UID 恢复问题。
 - 图片保存、16 次复制和 SQL 写入都在当前调用线程执行。`m_saveThread` 虽存在于控制器，却没有参与工作，较大图像可能卡住 UI。
 
 ### 架构沉淀
@@ -330,7 +330,7 @@ sequenceDiagram
 enum class SequenceMode { None, Identifying, Capturing };
 ```
 
-相比多个互不约束的布尔值，枚举保证识别序列与采集序列不会同时成立。但控制器仍有 `m_capturePaused`、`m_captureRequestPending`、`m_captureRequestDispatched`、`m_discardPendingCaptureResult`、`m_previewFrameAvailable` 等正交子状态，需要一起理解。
+相比多个互不约束的布尔值，枚举保证识别序列与采集序列不会同时成立。但控制器仍有 `m_capturePaused`、`m_captureRequestPending`、`m_captureRequestDispatched`、`m_discardPendingCaptureResult`、`m_previewFrameAvailable` 等正交子状态，并用 `m_completedCaptureChambers` 单独记录**本次采集序列**已经完成的舱室，需要一起理解。
 
 ### 6.1 构造与组装
 
@@ -368,6 +368,7 @@ identifyAll()
 startCaptureSequence()
   -> 必须经过本轮 RFID 授权
   -> 仅保留有 profile 的舱室，顺序 4→3→2→1
+  -> 清空“本次序列已完成舱室”集合
   -> mode = Capturing
   -> startPreview()
   -> captureNext()
@@ -377,12 +378,15 @@ startCaptureSequence()
        -> 150 ms 后 camera.capture()
   -> captured(image)
        -> prepareCapture + commitCapture
-       -> 舱室 16 孔完成则 sequenceIndex++
+       -> 舱室 16 孔完成则加入本次完成集合，并 sequenceIndex++
+       -> 本次完成集合大小等于队列大小才结束
        -> 80 ms 后继续 captureNext()
   -> 所有舱完成后 finishSequence()
 ```
 
 `m_captureRequestPending` 是防重入锁：上一张图尚未返回时，不再发第二个 `capture()`。`m_captureRequestDispatched` 区分“150 ms 延时尚未触发”和“相机已经收到请求”；`m_captureRequestToken` 让被暂停取消的旧定时器不能在恢复后误触发。`QTimer::singleShot` 不是工作线程，它只是把调用延后投递回事件循环，让 UI 有机会先画出当前孔标记。
+
+这里最容易误判的是“某舱历史最后一轮已经完成”。历史完成只说明数据库里有旧数据，不能说明它已完成**本次**拍摄。控制器因此在 `startCaptureSequence()` 清空 `m_completedCaptureChambers`，每当当前活动轮次刚完成才把舱号加入集合；只有集合大小等于本次队列大小才结束。这样 4、2 或 2、1 等任意识别组合都会逐舱执行，不会因旧轮次的 `finished` 提前跳过。
 
 ### 6.4 终止与暂停
 
@@ -392,9 +396,9 @@ startCaptureSequence()
 
 ### 6.5 关键 Code Review 结论
 
-**规格偏差：当前实现会自动连续拍满 16 孔。** `SPEC.md` 明确规定没有运动平台时应由操作员每次完成物理摆位后再点击拍照，软件只自动推进孔号。当前状态机在 80 ms + 150 ms 延时后直接继续拍照，可能把同一视野重复保存成 16 个孔。这不是代码风格问题，而是业务真实性问题。
+**当前实现采用自动连续拍满 16 孔的现行业务方式。** 状态机在一次提交成功后等待 80 ms，再由下一次 `captureNext()` 设置孔位并等待 150 ms 调用相机。旧版 `SPEC.md` 曾描述“人工摆位后逐次确认拍摄”，它与当前代码不同；应把它视为历史方案，而不是据此判定现行实现有缺陷。若硬件没有自动换孔能力，则仍需由产品和硬件流程重新确认这一前提。
 
-**启动恢复未接通。** 数据库打开后没有执行 `loadAssignments/loadRounds/restoreProfiles`，历史只能在重新识别同一 UID 后通过 `loadRoundsForUid` 出现，首页不会在重启后恢复原舱室。
+**历史恢复按 UID 重识别触发。** 数据库打开后不会恢复上次首页舱位；同一标签重新识别时，`bindProfile()` 通过 `loadRoundsForUid()` 恢复该培养皿历史。`loadAssignments/loadRounds/restoreProfiles` 属于未采用的旧启动恢复路径，除非产品重新要求“启动即还原舱位”，否则无需把它们接入主流程。
 
 **保存仍是同步的。** `m_saveThread` 仅在析构中等待，从未创建或使用。注释和成员名暗示计划异步保存，但实际 `commitCapture()` 在 UI 事件链中写磁盘和数据库。
 
@@ -533,13 +537,17 @@ images/{uid}/{date}/round_0001/well_01/{timestamp}_{uuid}_layer_00.jpg
 
 首页为 4 个舱各创建 16 个缩略图。点击缩略图先选择对应舱室，已绑定 profile 才进入皿详情。底部“开始识别”触发 `identifyAll()`，“开始拍照”触发控制器自动序列。
 
-`refreshHome()` 根据最新轮次设置缩略图和动态属性，再执行 `unpolish/polish` 让 QSS 重新匹配属性选择器。这是 Qt 动态属性改变后刷新样式的常见做法。
+`refreshHome()` 根据最新轮次设置缩略图和动态属性，再执行 `unpolish/polish` 让 QSS 重新匹配属性选择器。这是 Qt 动态属性改变后刷新样式的常见做法。状态颜色明确区分 idle 灰、recognizing 蓝和 capturing 绿。
+
+首页文案不再用“数据库中历史最后一轮已 finished”推断本轮完成：有活动轮次时显示“拍照中”，舱号出现在 `m_completedCaptureChambers` 时显示“本轮拍照完成”，历史存在但本次尚未拍摄时仍显示“等待本轮拍照”。“本轮拍照完成”使用 `QByteArray::fromHex()` 构造 UTF-8 文本，规避当前 MSVC/Qt 编译环境对源文件中文字符串字面量的乱码问题。
 
 ### 9.4 皿详情
 
 左侧切换有数据的舱室，中间显示患者/培养皿信息，右侧 4x4 展示某一轮的 16 孔图像。轮次滑块和定时器负责跨轮回放。
 
 `displayedDishRound()` 使用 `qBound` 保证显示索引处于合法范围；但是切换舱室时没有重置 `m_dishRoundIndex`，用户可能落到新舱室的同序号轮次，而不是默认最新轮次。
+
+皿轮次播放按钮保存在 `m_dishPlayButton`。离开皿详情时，`showPage()` 同时停止 `m_dishPlayTimer` 并把按钮文本恢复为 `>`，使图标状态与实际定时器状态一致；否则返回后会出现“界面仍像在播放、实际已停止”的显示状态漂移。
 
 ### 9.5 单孔详情与回放
 
@@ -553,7 +561,7 @@ images/{uid}/{date}/round_0001/well_01/{timestamp}_{uuid}_layer_00.jpg
 
 ### 9.7 UI 层风险
 
-- `mainwindow.cpp` 同时承担控件工厂、自定义绘制、三页布局、回放状态和文本格式，770 行已接近拆分临界点。可按页面拆为 QWidget 组件。
+- `mainwindow.cpp` 同时承担控件工厂、自定义绘制、三页布局、回放状态和文本格式，当前 792 行已接近拆分临界点。可按页面拆为 QWidget 组件。
 - 许多 Lambda 是单行长表达式，调试断点和错误处理不友好。
 - 自动序列期间的查看性切舱现在会先暂停并等待在途相机请求结束，避免错写数据；导航仍承担了业务暂停副作用，长期应由导航用例或控制器明确管理。
 - `m_wellImage` 只在 refresh 时按控件当前大小生成一次 pixmap，窗口 resize 后不会自动按新尺寸重算。
@@ -630,12 +638,12 @@ Controller 选择舱室 4
 
 按业务风险排序：
 
-1. **把无运动平台的自动连续拍摄改为人工确认拍摄、软件自动推进孔号。** 当前行为可能生成业务上虚假的 16 孔数据。
-2. **接通启动恢复。** 数据库成功打开后加载舱室分配和历史轮次，再调用 `restoreProfiles()`。
-3. **明确图像格式。** 若规格要求无损，暂存和正式归档都应采用 PNG 或经过批准的无损格式。
-4. **把磁盘和批量 SQL 保存移出 GUI 线程。** 用专门 Worker/线程，并保留 `PendingCapture` 上下文校验。
-5. **为未完成轮次设计恢复或清理协议。** 至少启动时清理无法关联的 staging；更完整的方案是在 DB 先建 in_progress 轮次并逐图登记。
-6. **让批量清舱具备事务性或改成成功后替换。** 避免识别部分失败造成旧状态不可恢复。
+1. **确认自动连拍所依赖的硬件前提。** 当前业务已经采用自动连续拍摄；若设备不能自动换孔，需要在产品层重新定义人工确认点，而不是仅调整定时器。
+2. **明确图像格式。** 若业务要求无损，暂存和正式归档都应采用 PNG 或经过批准的无损格式。
+3. **把磁盘和批量 SQL 保存移出 GUI 线程。** 用专门 Worker/线程，并保留 `PendingCapture` 上下文校验。
+4. **为未完成轮次设计恢复或清理协议。** 当前已完成历史可通过同 UID 重识别恢复；这里针对的是尚未入库的 staging 临时数据，至少应在启动时清理无法关联的文件。
+5. **让批量清舱具备事务性或改成成功后替换。** 避免识别部分失败造成旧状态不可恢复。
+6. **清理或正式标注旧恢复接口。** 若确定不采用“启动即恢复舱位”，可移除或注释 `loadAssignments/loadRounds/restoreProfiles`，避免后续维护者误以为主流程漏接。
 7. **拆分 MainWindow。** 首页、皿详情、孔详情各自成为组件，窗口只管理导航。
 
 ## 13. 面试化知识沉淀
@@ -656,4 +664,4 @@ Controller 选择舱室 4
 
 第二次：沿“识别成功”和“拍到第 16 张图”两条调用链打断点，观察信号顺序与状态变化。
 
-第三次：尝试亲自完成三个改造：启动恢复、人工确认拍摄、异步保存。能独立解释并实现这三项，才算真正把这套 AI 生成代码转化成自己的工程能力。
+第三次：尝试亲自完成三个改造：为 staging 设计崩溃清理、为自动连拍补充可验证的硬件换孔前提、实现异步保存。能独立解释“同 UID 恢复历史”和“本次完成集合为何不能由历史 finished 替代”，才算真正把这套 AI 生成代码转化成自己的工程能力。

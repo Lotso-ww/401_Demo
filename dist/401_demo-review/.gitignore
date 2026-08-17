@@ -1,0 +1,56 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# CMake and Qt Creator build output
+/build/
+/out/
+cmake-build-*/
+*.user
+
+# Never use the source root as a build directory.  These are generated when
+# an in-source CMake configure is run and must not be kept with the source.
+/.cmake/
+/CMakeCache.txt
+/CMakeFiles/
+/Testing/
+/.ninja_deps
+/.ninja_log
+/build.ninja
+/cmake_install.cmake
+/CTestTestfile.cmake
+/DartConfiguration.tcl
+/Tls401RfidCcdDemo.cbp
+/*_autogen/
+/dependency_probe.*
+/tst_workflow.*
+/tls401_demo.*

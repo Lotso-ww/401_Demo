@@ -348,7 +348,7 @@ ChamberModel *selectedModel() {
 }
 ```
 
-- 恢复只复制两个数组共同范围，避免越界，但没有验证 `profiles[i].number == i + 1`。
+- `restoreProfiles()` 只复制两个数组共同范围，避免越界，但没有验证 `profiles[i].number == i + 1`。它属于旧的“启动时按舱恢复”接口，当前控制器不调用；现行恢复入口是后面的 `bindProfile()`。
 - 选择相同舱室不重复发信号，减少无意义刷新。
 - 选择变化先发专用信号，再发通用变化信号；工作流连接两个信号时会发生两次 `selectFirstPendingWell()`，虽无害但有重复。
 - `selectedModel()` 将 1-based 业务编号转成 0-based 容器下标。
@@ -383,7 +383,7 @@ if (auto *model = selectedModel()) {
 ```
 
 - 第 17 行没有选舱则跳到错误分支。
-- 第 18~19 行按 UID 加载历史，而不是按舱加载，符合培养皿换舱后历史跟随标签的规则。
+- 第 18~19 行按 UID 加载历史，而不是按舱加载，符合培养皿换舱后历史跟随标签的规则。**这就是当前应用重启后的数据恢复机制：再次扫描同一 UID，数据库中的已完成轮次便重新进入内存模型。**
 - 第 20 行数据库绑定成功后才修改内存。
 - 第 21~22 行用移动赋值接管轮次数组，避免不必要深拷贝。
 - 第 26 行错误赋值和 `return false` 写在同一源码行，逻辑正确但可读性不佳。
@@ -745,13 +745,14 @@ for (int offset = 1; offset <= 16; ++offset) {
 #include "app/workflowservices.h"
 #include "devices/deviceinterfaces.h"
 #include <QPointer>
+#include <QSet>
 #include <QThread>
 #include <QVector>
 ```
 
-头文件需要工作流和设备接口的完整类型；`QPointer` 用于观察 QObject 是否已被删除，`QThread` 为计划中的保存线程，`QVector` 保存舱室执行队列。
+头文件需要工作流和设备接口的完整类型；`QPointer` 用于观察 QObject 是否已被删除，`QSet` 记录本次序列已完成的舱号，`QThread` 为计划中的保存线程，`QVector` 保存舱室执行队列。
 
-### 第 9~32 行：公开状态与命令
+### 第 10~34 行：公开状态与命令
 
 ```cpp
 class ApplicationController : public QObject {
@@ -789,14 +790,17 @@ void startCaptureSequence();
 ```cpp
 bool sequenceActive() const { return m_sequenceMode != SequenceMode::None; }
 bool identifying() const { return m_sequenceMode == SequenceMode::Identifying; }
+bool chamberCompletedInCurrentCapture(int chamberNo) const {
+    return m_completedCaptureChambers.contains(chamberNo);
+}
 bool canStartCapture() const { return m_captureSequenceAuthorized && !sequenceActive(); }
 QString sequenceStatus() const { return m_sequenceStatus; }
 bool captureSequencePaused() const { return m_capturePaused; }
 ```
 
-第 26~30 行为 UI 提供派生查询。`canStartCapture` 不检查相机 Ready 或数据库 Ready，这些失败要到流程运行时才能暴露。
+第 27~32 行为 UI 提供派生查询。`chamberCompletedInCurrentCapture()` 只回答某舱是否在**当前这次自动采集**中完成，不能用历史 `round.finished` 替代；首页据此区分“历史有数据”和“本轮刚完成”。`canStartCapture` 不检查相机 Ready 或数据库 Ready，这些失败要到流程运行时才能暴露。
 
-### 第 33~40 行：信号和内部步骤
+### 第 35~42 行：信号和内部步骤
 
 ```cpp
 signals:
@@ -813,7 +817,7 @@ private:
 - `stateChanged` 是粗粒度重渲染信号。
 - 四个私有方法构成状态机的推进、完成和相机回调节点。
 
-### 第 41~62 行：成员状态
+### 第 43~69 行：成员状态
 
 ```cpp
 ChamberSessionService m_sessions;
@@ -845,6 +849,7 @@ ImageFileStore *m_imageStore = nullptr;
 
 ```cpp
 QVector<int> m_sequenceChambers;
+QSet<int> m_completedCaptureChambers;
 int m_sequenceIndex = 0;
 SequenceMode m_sequenceMode = SequenceMode::None;
 bool m_captureRetake = false;
@@ -859,7 +864,7 @@ QPointer<QThread> m_saveThread;
 QString m_sequenceStatus;
 ```
 
-- 队列和索引共同表示当前舱。
+- 队列和索引共同表示当前舱；完成集合记录本次序列真正完成过的舱，避免历史完成轮次让 4、2 或 2、1 等队列提前结束。
 - `m_captureRetake` 只服务手工 `captureCurrent()`。
 - paused 是用户浏览详情造成的临时暂停。
 - preview available 是采集启动守卫，一旦收到过帧就保持 true。
@@ -935,7 +940,7 @@ if (m_database->open(QDir(root).filePath("tls401.sqlite"), &dbError)) {
 - `mkpath` 的返回值未检查，后续数据库 open 会间接暴露失败。
 - DB 成功后按依赖顺序创建仓储并注入。
 - 构造函数内 `emit message` 通常早于 MainWindow 连接该信号，所以这条初始化失败消息可能无人接收；UI 只能从 `databaseReady=false` 看见异常状态。
-- 这里没有调用 `loadAssignments/loadRounds`，所以重启恢复链未接通。
+- 这里没有调用 `loadAssignments/loadRounds`，因为当前产品采用“再次识别同一 UID 时恢复历史”的策略：`bindProfile()` 内部调用 `loadRoundsForUid()`。`restoreProfiles()` 与这两个按舱加载接口是旧的启动恢复方案遗留，不应被描述成现行主流程缺陷。
 
 ### 第 42~53 行：设备状态信号
 
@@ -951,7 +956,7 @@ connect(m_rfid, &IRfidService::stateChanged, this,
 
 相机连接同理。先更新缓存再通知 UI，保证槽函数读取的是新状态。错误状态额外转换成用户提示；非错误 detail 不展示。
 
-### 第 54~65 行：拍照失败、预览和成功
+### 第 54~75 行：拍照失败、预览和成功
 
 ```cpp
 connect(m_camera, &ICameraService::captureFailed, this,
@@ -962,7 +967,8 @@ connect(m_camera, &ICameraService::captureFailed, this,
     m_captureRequestDispatched = false;
     m_discardPendingCaptureResult = false;
     if (discardResult) {
-        // 恢复后从原自动队列继续，不显示错误也不终止。
+        if (m_sequenceMode == SequenceMode::Capturing && !m_capturePaused)
+            QTimer::singleShot(0, this, [this] { captureNext(); });
         return;
     }
     emit message(..., true);
@@ -986,7 +992,7 @@ connect(m_camera, &ICameraService::previewFrame, this,
 
 `captured` 信号直接转给 `handleCapturedFrame`，把复杂逻辑从 Lambda 抽出。
 
-### 第 66~92 行：RFID 识别结果
+### 第 76~102 行：RFID 识别结果
 
 ```cpp
 if (m_sequenceMode == SequenceMode::Identifying) {
@@ -1011,11 +1017,11 @@ if (m_sequenceMode == SequenceMode::Identifying) {
 
 普通模式下，失败直接提示；成功绑定后设置 `m_captureSequenceAuthorized=true`，通知 UI 启用拍照按钮，并显示设备结果消息。
 
-### 第 93~97 行：轮次完成提示
+### 第 103~105 行：轮次完成提示
 
 工作流 `roundCompleted` 只产生“16 孔完成”消息。真正的舱室索引推进发生在 `handleCapturedFrame`，因此该信号不是序列推进依据。
 
-### 第 99~112 行：析构收尾
+### 第 109~122 行：析构收尾
 
 ```cpp
 if (m_camera) m_camera->disconnectDevice();
@@ -1034,19 +1040,20 @@ delete m_database;
 - 若设备断开是异步的，析构里没有等待其完成；真实实现必须保证对象销毁安全。
 - saveThread 当前永远为空。
 
-### 第 114~130 行：设备初始化与单舱识别
+### 第 124~140 行：设备初始化与单舱识别
 
 `initializeDevices()` 用标志防止重复初始化，然后分别调用 RFID initialize 和 camera connect。没有要求二者相互等待，设备实现可并行工作。
 
 `identify()` 先要求选舱，再调用 RFID。它没有检查 RFID Ready、序列是否活动或重复请求；当前 UI 未调用这个入口，因此问题尚未暴露。
 
-### 第 132~151 行：开始批量识别
+### 第 142~162 行：开始批量识别
 
 ```cpp
 if (sequenceActive()) { /* 提示 */ return; }
 QString clearError;
 if (!m_sessions.clearAll(&clearError)) { /* 提示 */ return; }
 m_captureSequenceAuthorized = false;
+m_completedCaptureChambers.clear();
 m_sequenceChambers = {4, 3, 2, 1};
 m_sequenceIndex = 0;
 m_sequenceMode = SequenceMode::Identifying;
@@ -1056,10 +1063,11 @@ identifyNext();
 ```
 
 - 活动序列互斥守卫在最前。
-- **开始识别即清空所有旧绑定**；后续失败也不会恢复。
+- **开始识别即清空所有旧绑定**；后续失败也不会恢复。这是当前批量识别用例的既定语义，重新识别同一 UID 时历史轮次仍会从数据库按 UID 加载。
+- 新一轮识别同时清空 `m_completedCaptureChambers`，因此历史完成提示不会延续到新轮次。
 - 只有队列和状态准备完整后才调用推进方法，避免同步回调看到半初始化状态。
 
-### 第 153~168 行：推进识别
+### 第 164~179 行：推进识别
 
 ```cpp
 if (m_sequenceMode != SequenceMode::Identifying) return;
@@ -1076,7 +1084,7 @@ if (m_sequenceIndex >= m_sequenceChambers.size()) {
 
 未结束时，取当前舱号、选择舱室、更新状态文本、通知 UI，再发起 recognize。选择先于识别，保证返回结果绑定到正确舱。
 
-### 第 170~198 行：开始自动采集
+### 第 181~210 行：开始自动采集
 
 ```cpp
 if (sequenceActive()) return;
@@ -1090,13 +1098,14 @@ m_sequenceChambers.clear();
 for (int chamber : {4, 3, 2, 1})
     if (m_sessions.chambers().at(chamber - 1).profile)
         m_sequenceChambers.push_back(chamber);
+m_completedCaptureChambers.clear();
 ```
 
 只把识别成功的舱加入队列，保持指定顺序。`at()` 越界会断言，但固定 4 舱保证安全。
 
-第 188~195 行清索引、切模式、消耗授权、清暂停/预览/pending 状态并通知 UI。第 196 行启动预览，第 197 行立即尝试 `captureNext()`；没有预览帧时会进入等待状态。
+第 199~207 行清索引和本次完成集合、切模式、消耗授权、清暂停/预览/pending 状态并通知 UI。第 208 行启动预览，第 209 行立即尝试 `captureNext()`；没有预览帧时会进入等待状态。
 
-### 第 200~233 行：推进自动采集
+### 第 212~252 行：推进自动采集
 
 ```cpp
 if (m_sequenceMode != SequenceMode::Capturing
@@ -1147,7 +1156,7 @@ QTimer::singleShot(150, this, [this, requestToken] {
 
 pending 在定时器前置 true，阻止 150 ms 内预览帧重复排队。token 把延时回调与本次请求绑定：暂停取消后即使旧回调在恢复后到达，也不能再调用相机。真正调用 `capture()` 前先置 dispatched，暂停逻辑才能分辨“可直接取消”和“必须等待相机终局信号”的请求。
 
-### 第 235~248 行：手工拍摄
+### 第 254~270 行：手工拍摄
 
 自动序列活动时拒绝手工拍摄；已有请求正在保存时也拒绝。然后记录是否重拍、置 pending 并调用 camera。该入口没有先调用 `prepareCapture`，无活动轮次等错误要等图像已经拍回后才发现。
 
@@ -1195,7 +1204,7 @@ if (!m_workflow.prepareCapture(image, m_captureRetake,
 
 拍照完成后读取相机当前参数。严格审计场景应在发请求时冻结参数，否则返回前参数变化会记录错误值。
 
-第 269 行在 commit 前把 pending 置 false。当前 commit 同步执行，不会处理事件循环，因此不会实际重入；若未来 commit 异步化，这个时机必须重新设计。
+第 302 行在 commit 前把 pending 置 false。当前 commit 同步执行，不会处理事件循环，因此不会实际重入；若未来 commit 异步化，这个时机必须重新设计。
 
 ```cpp
 if (!m_workflow.commitCapture(pending, &commitError)) {
@@ -1215,14 +1224,21 @@ if (m_sequenceMode == SequenceMode::Capturing
     const auto *model = m_sessions.selectedModel();
     const bool chamberCompleted = model && !model->rounds.isEmpty()
         && model->rounds.last().finished;
-    if (chamberCompleted) ++m_sequenceIndex;
+    if (chamberCompleted) {
+        m_completedCaptureChambers.insert(chamberBeforeCapture);
+        ++m_sequenceIndex;
+    }
+    if (m_completedCaptureChambers.size() == m_sequenceChambers.size()) {
+        finishSequence(...);
+        return;
+    }
 ```
 
-只有仍在自动模式且舱未变化才推进。完成一个舱的 16 孔后索引加一；未完成则继续同一舱的下一孔。
+只有仍在自动模式且舱未变化才推进。完成一个舱的 16 孔后，舱号先写入本次完成集合，再把索引加一；未完成则继续同一舱的下一孔。`QSet::insert()` 具有幂等性，即使完成信号被重复观察，也不会重复增加完成数量。
 
-随后遍历队列检查所有舱最后一轮 finished。全完成则结束，否则 80 ms 后再次 `captureNext()`。这正是自动连续拍摄的实现位置。
+提交后只在当前舱的活动轮次刚刚变为 `finished` 时，将 `chamberBeforeCapture` 插入 `m_completedCaptureChambers` 并推进索引；当集合大小等于当前队列大小才结束，否则 80 ms 后再次 `captureNext()`。这里刻意不检查“所有舱最后一轮是否 finished”，因为那会把历史轮次误当成本次序列结果。
 
-### 第 299~313 行：完成/中止序列
+### 第 326~343 行：完成/中止序列
 
 ```cpp
 const SequenceMode completedMode = m_sequenceMode;
@@ -1244,14 +1260,14 @@ if (!detail.isEmpty()) emit message(detail, false);
 - 先保存旧 mode，因为后面要清空。
 - 正常完成轮次不再 active；异常中止时 active 轮次被丢弃。
 - 只要拍照序列结束，不论成功失败，都消耗授权。
-- `m_previewFrameAvailable`、队列和 index 没清，但下次开始会重设关键值；token 递增使尚未执行的延时拍摄回调失效。
+- `m_previewFrameAvailable`、完成集合、队列和 index 没全部清空，但下次开始会重设本次序列需要的关键值；token 递增使尚未执行的延时拍摄回调失效，完成集合则保留供首页在序列结束后显示“本轮拍照完成”。
 - 空 detail 表示异常路径已在上游提示，这里不重复消息。
 
-### 暂停与恢复：取消延时请求，隔离在途结果
+### 第 345~368 行：暂停与恢复，隔离在途结果
 
 只允许拍照模式暂停，且重复设置直接返回。暂停时若请求尚未下发，清 pending 并递增 token，立即取消延时请求；若相机已经收到 capture，则保留 pending 锁并设置 discard 标记。这样恢复不会抢先发出另一张图，必须等旧请求的 `captured/captureFailed` 到达并被消费。
 
-恢复时用 0 ms singleShot 在下一次事件循环调用 `captureNext()`；仍有在途旧请求时守卫会阻止它继续。旧请求被丢弃并清锁后，控制器才会再次从 `m_sequenceIndex` 指定的原队列舱室继续。
+恢复时用 0 ms singleShot 在下一次事件循环调用 `captureNext()`；仍有在途旧请求时守卫会阻止它继续。旧请求被丢弃并清锁后，控制器才会再次从 `m_sequenceIndex` 指定的原队列舱室继续。UI 查看其他舱室不会改变自动队列归属。
 
 ### 架构沉淀
 
@@ -1667,7 +1683,7 @@ struct ChamberCardView {
 
 这不是领域模型，而是把同一张首页卡片的控件引用打包。它避免维护 4 组平行数组。控件由 Qt parent 树拥有，结构体只观察，不负责 delete。
 
-### 第 26~49 行：窗口行为
+### 第 26~50 行：窗口行为
 
 - `buildUi` 组装三页；三个 `build*Page` 各自返回 QWidget。
 - `refreshAll` 按当前页分派；三个 `refresh*` 做状态投影。
@@ -1676,15 +1692,16 @@ struct ChamberCardView {
 - `displayedDishRound`、两种 playback 方法负责从领域数据选出当前要显示的图。
 - `setDishRoundIndex` 集中维护轮次滑块与显示索引。
 - `updatePreview` 只更新校准实时图。
+- `selectChamberForInspection` 是查看性切舱的统一安全入口：识别中拒绝切换，自动拍照中先暂停再切换。
 
-### 第 50~79 行：成员分类
+### 第 51~81 行：成员分类
 
-- 第 50~58 行：控制器、uic 对象、顶层页面和主要 Label。
-- 第 59~67 行：首页/皿页/孔页的重复控件集合和时间轴控件。
-- 第 68~71 行：当前孔、历史索引、皿轮次索引和播放步长，是纯显示态。
-- 第 72~73 行：孔回放与皿回放两个独立定时器。
-- 第 74~77 行：孔详情浏览/校准模式控件。
-- 第 78 行当前页索引，约定 0 首页、1 皿详情、2 孔详情。裸整数可改枚举增强可读性。
+- 第 51~59 行：控制器、uic 对象、顶层页面和主要 Label。
+- 第 60~69 行：首页/皿页/孔页的重复控件集合、时间轴控件和 `m_dishPlayButton`。保存播放按钮指针，才能在导航停止定时器时同步恢复图标。
+- 第 70~73 行：当前孔、历史索引、皿轮次索引和播放步长，是纯显示态。
+- 第 74~75 行：孔回放与皿回放两个独立定时器。
+- 第 76~79 行：孔详情浏览/校准模式控件和首页拍照按钮。
+- 第 80 行当前页索引，约定 0 首页、1 皿详情、2 孔详情。裸整数可改枚举增强可读性。
 
 ### 架构沉淀
 
@@ -1718,11 +1735,11 @@ UI 文件没有直接声明资源与信号连接；资源由 qrc/C++ 使用，�
 
 该文件包含控件工厂、自定义孔缩略图、三页构建、回放定时器、导航和状态刷新。读法应分成“构建一次”和“状态变化时反复刷新”两条线。
 
-### 第 1~24 行：Qt 控件依赖
+### 第 1~25 行：Qt 控件依赖
 
-引入按钮组、下拉框、布局、绘图、滑块、样式、定时器等。`QDoubleSpinBox` 和 `QIcon` 当前没有使用，属于可清理依赖；`QSpinBox` 用于校准占位控件。
+引入按钮组、`QByteArray`、下拉框、布局、绘图、滑块、样式、定时器等。`QByteArray` 用于把十六进制 UTF-8 字节还原为“本轮拍照完成”，避开当前 MSVC/Qt 源码中文字面量的编码差异。`QDoubleSpinBox` 和 `QIcon` 当前没有使用，属于可清理依赖；`QSpinBox` 用于校准占位控件。
 
-### 第 25~39 行：控件工厂
+### 第 26~40 行：控件工厂
 
 ```cpp
 QLabel *label(const QString &text = {}) {
@@ -1740,7 +1757,7 @@ QPushButton *button(const QString &text, bool primary = false) {
 
 两个匿名命名空间函数减少动态 UI 的重复代码。控件创建时没有 parent，但加入布局后 Qt 会重新设置所属关系。primary 通过 objectName 让 QSS 应用主按钮样式。
 
-### 第 41~84 行：自绘孔缩略图按钮
+### 第 42~85 行：自绘孔缩略图按钮
 
 构造函数保存孔号。`setThumbnail()` 的逻辑是：空图清缓存；非空图取短边，以中心正方形裁剪，再转成 `QPixmap` 缓存，最后 `update()` 请求重绘。
 
@@ -1754,13 +1771,13 @@ QPushButton *button(const QString &text, bool primary = false) {
 
 这样既保留 QSS 状态，又完全控制内容。硬编码颜色 `#d7e8f5` 绕过主题层，换主题时可能不协调。
 
-### 第 86~100 行：辅助转换
+### 第 87~101 行：辅助转换
 
 `setWellThumbnail()` 用 `dynamic_cast` 确认传入按钮是自定义类型后设置缩略图。由于容器类型是 `QPushButton*`，这里需要向下转型。
 
 `wellStateText()` 把四种孔状态转中文，但当前文件没有调用该函数，是死代码。
 
-### 第 103~131 行：窗口构造和两个播放定时器
+### 第 104~136 行：窗口构造、析构和两个播放定时器
 
 ```cpp
 ui->setupUi(this);
@@ -1777,11 +1794,11 @@ connect(camera previewFrame, updatePreview);
 
 定时器以窗口为 parent 自动销毁。析构只需 delete `ui`；动态控件都在 Qt 对象树中。
 
-### 第 138~146 行：添加三页
+### 第 139~147 行：添加三页
 
 把 `.ui` 中的标题、状态、pages 缓存到成员，然后依次添加首页、皿页、孔页。添加顺序定义了整个文件使用的页面整数协议。
 
-### 第 148~228 行：首页构建
+### 第 149~231 行：首页构建
 
 首页使用垂直布局，主体是 2x2 舱室卡片网格。每舱循环创建：
 
@@ -1796,7 +1813,7 @@ connect(camera previewFrame, updatePreview);
 
 底部动作区创建“开始识别”和“开始拍照”，分别调用控制器批量用例。UI 不直接循环舱室或设备，这是正确边界。
 
-### 第 231~335 行：皿详情构建
+### 第 233~339 行：皿详情构建
 
 页面水平分三块：
 
@@ -1811,11 +1828,11 @@ connect(camera previewFrame, updatePreview);
 轮次控制：
 
 - previous/next 调整 `m_dishRoundIndex`，`qBound` 会在两端停住，不循环。
-- play 按钮启动/停止定时器，定时器内部按轮次数取模循环。
+- play 按钮保存到 `m_dishPlayButton`，启动时显示 `||`、停止时显示 `>`；定时器内部按轮次数取模循环。保留成员指针是为了离开页面时也能同步复位图标。
 - 速度 1X~4X 映射 500/250/150/100 ms；默认 ComboBox 选 3X，但连接发生在 `setCurrentIndex(2)` 之后，所以定时器初始仍是构造时的 500 ms，直到用户改变一次速度。这是初始化顺序 bug。
 - Slider 的 valueChanged 统一调用 `setDishRoundIndex`。
 
-### 第 338~501 行：孔详情与校准页构建
+### 第 341~504 行：孔详情与校准页构建
 
 左侧 2x8 的 16 孔选择按钮；中间患者信息和浏览/校准模式；右侧是 `m_wellModes` 中的浏览页或校准页。
 
@@ -1834,7 +1851,7 @@ connect(camera previewFrame, updatePreview);
 - 校准模式暂停自动拍照并启动预览。
 - 两个 checkable 按钮手工互斥，未使用 QButtonGroup exclusive。
 
-### 第 504~512 行：按当前页刷新
+### 第 507~515 行：按当前页刷新
 
 ```cpp
 if (m_currentPage == 0) refreshHome();
@@ -1844,13 +1861,13 @@ else refreshWell();
 
 任何非 0/1 值都当孔详情。状态变化时只刷新可见页，避免不必要的图片缩放，但隐藏页控件可能暂时陈旧，进入页面时 `showPage` 会再次刷新。
 
-### 第 514~550 行：文本格式化
+### 第 517~551 行：文本格式化
 
 `stateText()` 把设备四态转成中文。`chamberSummary()` 无 profile 返回“未绑定”，有 profile 时显示培养皿、女方、病历、发育天数和 `rounds.size()`。这里把未完成内存轮次也计为“已采集轮次”，文字可能偏乐观。
 
-`chamberStateText()` 按优先级推断：识别中 > 空舱 > 当前舱活动轮次 > 最近一轮完成/未完成 > 等待拍照。它是一个 UI 决策树，不改变业务状态。
+`chamberStateText()` 按优先级推断：识别中 > 空舱 > 当前舱活动轮次 > 本次序列完成集合 > 未完成轮次 > 等待本轮拍照。它不再把历史 `last().finished` 直接显示成“本轮完成”，因为历史轮次可能来自上次运行。完成文案通过 `QString::fromUtf8(QByteArray::fromHex(...))` 构造，解决源码中文字符串在当前编译链下的乱码。
 
-### 第 552~610 行：选择展示轮次与回放数据
+### 第 553~611 行：选择展示轮次与回放数据
 
 `displayedDishRound()`：无数据返回 null；否则索引小于 0 时默认最新一轮，再用 qBound 限制范围。
 
@@ -1858,7 +1875,7 @@ else refreshWell();
 
 `setDishRoundIndex()`：无轮次时置 -1；有轮次时夹紧索引。如果滑块值不同，用 `QSignalBlocker` 暂停信号再设值，避免递归调用自身；最后刷新皿页。
 
-### 第 612~654 行：首页刷新
+### 第 613~660 行：首页刷新
 
 先读取四舱、当前舱、活动轮次和当前孔。拍照按钮只由 `canStartCapture()` 控制，并设置解释性 Tooltip。
 
@@ -1866,7 +1883,7 @@ else refreshWell();
 
 - checked 映射当前舱；
 - state/details 由格式化方法产生；
-- 动态属性 `activity` 改变后 unpolish/polish，强制 QSS 重匹配；
+- 动态属性 `activity` 按 recognizing、capturing、idle 三态设置，分别对应蓝、绿、灰；改变后 unpolish/polish，强制 QSS 重匹配；
 - 所有孔先重置 empty 和空图；
 - 最近一轮有可用图则设 complete 和缩略图；
 - 当前活动孔覆盖为 current；
@@ -1874,7 +1891,7 @@ else refreshWell();
 
 顶部状态合并 RFID、CCD、数据库、固定拍摄顺序和当前 sequenceStatus。`showMessage()` 也写同一个 Label，下一次 `refreshHome()` 会覆盖刚显示的消息，因此错误提示不是持久消息队列。
 
-### 第 656~688 行：皿详情刷新
+### 第 662~694 行：皿详情刷新
 
 根据当前模型设置轮次滑块范围。只有 `m_dishRoundIndex < 0` 才默认最新；切换到另一个舱时旧索引保留。
 
@@ -1882,9 +1899,9 @@ else refreshWell();
 
 四个舱按钮仅在有 profile 时启用并同步 checked。
 
-第 674 行取得 `wellStates()` 但后续没有使用，是无效计算。孔按钮 checked 使用工作流 currentWell，即使当前显示的是历史轮次也会显示活动选择；缩略图来自 `displayedDishRound()`。
+第 680 行取得 `wellStates()` 但后续没有使用，是无效计算。孔按钮 checked 使用工作流 currentWell，即使当前显示的是历史轮次也会显示活动选择；缩略图来自 `displayedDishRound()`。
 
-### 第 690~729 行：单孔刷新
+### 第 696~735 行：单孔刷新
 
 先同步 16 个孔导航按钮，然后生成患者/培养皿详情。
 
@@ -1899,9 +1916,9 @@ else refreshWell();
 
 窗口 resize 后如果没有再次 refresh，pixmap 不会适应新尺寸；可在 resizeEvent 中重算或让自定义控件 paint 时缩放。
 
-### 页面导航、安全切舱与业务副作用
+### 第 737~779 行：页面导航、安全切舱与业务副作用
 
-- 离开皿页停止皿回放。
+- 离开皿页停止皿回放，并把 `m_dishPlayButton` 文本恢复为 `>`，保证图标与定时器真实状态一致。
 - 从孔详情离开时恢复自动拍摄。
 - 进入孔详情时暂停自动拍摄、启动预览，并强制回浏览模式。
 - 回首页时保持/启动预览，注释说明避免采集线程停启竞态。
@@ -1911,7 +1928,7 @@ else refreshWell();
 
 导航函数仍直接暂停/恢复业务序列，因此“打开详情”不仅是视觉动作。后续路由变复杂时，这种副作用宜集中到导航控制器或显式用例。
 
-### 第 759~770 行：消息与实时预览
+### 第 781~792 行：消息与实时预览
 
 `showMessage()` 忽略空文本，把错误前缀为“提示”、成功前缀为“完成”，写入顶栏状态 Label。
 
@@ -1981,4 +1998,4 @@ return app.exec();
 4. UI：`workflow changed -> refreshAll -> refreshHome/refreshDish/refreshWell`。
 5. 异常：让第 8 张暂存失败、让第 16 张 SQL 失败、拍照后立即切页，观察哪一层清 pending、哪一层删 staging、哪一层提示。
 
-读完代码只是“知道”。能够在不看原实现的情况下画出状态机、解释每个持久化补偿步骤，并亲自修复自动连拍与启动恢复，才是把它真正转化成自己的知识。
+读完代码只是“知道”。能够在不看原实现的情况下画出状态机、解释每个持久化补偿步骤，并说明“同 UID 重识别恢复历史”“本次完成集合”“暂停后丢弃在途结果”三者各自解决什么问题，才是把它真正转化成自己的知识。

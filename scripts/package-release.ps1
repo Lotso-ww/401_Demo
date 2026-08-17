@@ -10,6 +10,24 @@ $buildDirectory = Join-Path $projectRoot "build\release"
 $packageDirectory = Join-Path $projectRoot "dist\401_demo"
 $application = Join-Path $buildDirectory "401_demo.exe"
 
+# CMake is often launched outside Qt Creator, so load the same VS2017 x86
+# environment used by the Qt 5.14.2 kit before configuring the project.
+$vcVars = "D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
+if (-not (Test-Path -LiteralPath $vcVars)) {
+    throw "The VS2017 x86 build environment was not found: $vcVars"
+}
+$buildEnvironment = & cmd.exe /d /s /c ('call "' + $vcVars + '" x86 >nul && set')
+foreach ($entry in $buildEnvironment) {
+    if ($entry -match '^([^=]+)=(.*)$') {
+        [Environment]::SetEnvironmentVariable($matches[1], $matches[2], "Process")
+    }
+}
+$ninjaDirectory = "D:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja"
+if (-not (Test-Path -LiteralPath (Join-Path $ninjaDirectory "ninja.exe"))) {
+    throw "Ninja was not found: $ninjaDirectory"
+}
+$env:Path = "$ninjaDirectory;$env:Path"
+
 if (Test-Path -LiteralPath $packageDirectory) {
     if (-not $Clean) {
         throw "Release directory already exists: $packageDirectory. Run again with -Clean to recreate it."
@@ -45,8 +63,6 @@ $drivers = Join-Path $buildDirectory "Drivers"
 if (Test-Path -LiteralPath $drivers) {
     Copy-Item -LiteralPath $drivers -Destination $packageDirectory -Recurse
 }
-
-Copy-Item -LiteralPath (Join-Path $projectRoot "docs\RELEASE-README.txt") -Destination $packageDirectory
 
 Write-Host "Release package created: $packageDirectory"
 Write-Host "Main application: $(Join-Path $packageDirectory '401_demo.exe')"
