@@ -1,0 +1,215 @@
+Root Entry
+SummaryInformation
+DocumentSummaryInformation
+WordDocument
+user
+Normal.dotm
+Microsoft Office Word
+KSOProductBuildVer
+KSOTemplateDocerSaveRecord
+2052-12.1.0.28043
+923013F10317425E82B0CA09B53FE770
+eyJoZGlkIjoiODk1N2ZlNDFkMmU2OTI4OGEyOWQ0YzU3MjQ3MmEwY2UiLCJ1c2VySWQiOiIzNjkzNzY3NTcifQ==
+0Table
+Data
+WpsCustomData
+V1.0
+2021/11/03
+ TOC \o "1-3" \h \z \u 
+ HYPERLINK \l _Toc8764 
+ PAGEREF _Toc8764 \h 
+ HYPERLINK \l _Toc11124 
+1.1. 
+ PAGEREF _Toc11124 \h 
+ HYPERLINK \l _Toc28886 
+1.2. 
+ PAGEREF _Toc28886 \h 
+ HYPERLINK \l _Toc15675 
+1.3. 
+ PAGEREF _Toc15675 \h 
+ HYPERLINK \l _Toc859 
+1.4. 
+ PAGEREF _Toc859 \h 
+ HYPERLINK \l _Toc27714 
+ PAGEREF _Toc27714 \h 
+ HYPERLINK \l _Toc2087 
+2.1. 
+ PAGEREF _Toc2087 \h 
+ HYPERLINK \l _Toc22363 
+2.2. 
+ PAGEREF _Toc22363 \h 
+ HYPERLINK \l _Toc19718 
+2.3. 
+ PAGEREF _Toc19718 \h 
+ HYPERLINK \l _Toc7770 
+2.4. 
+ PAGEREF _Toc7770 \h 
+ HYPERLINK \l _Toc16083 
+2.5. 
+ PAGEREF _Toc16083 \h 
+ HYPERLINK \l _Toc23995 
+2.6. 
+ PAGEREF _Toc23995 \h 
+ HYPERLINK \l _Toc1781 
+2.7. 
+ PAGEREF _Toc1781 \h 
+ HYPERLINK \l _Toc9381 
+ PAGEREF _Toc9381 \h 
+ HYPERLINK \l _Toc15854 
+3.1. 
+ PAGEREF _Toc15854 \h 
+ HYPERLINK \l _Toc8118 
+3.2. 
+ PAGEREF _Toc8118 \h 
+ HYPERLINK \l _Toc9059 
+3.3. 
+ PAGEREF _Toc9059 \h 
+ HYPERLINK \l _Toc18302 
+ PAGEREF _Toc18302 \h 
+ HYPERLINK \l _Toc3895 
+ PAGEREF _Toc3895 \h 
+ HYPERLINK \l _Toc6042 
+5.1. 
+ PAGEREF _Toc6042 \h 
+ HYPERLINK \l _Toc11446 
+5.2. 
+ PAGEREF _Toc11446 \h 
+ HYPERLINK \l _Toc15300 
+5.3. 
+ PAGEREF _Toc15300 \h 
+ HYPERLINK \l _Toc22499 
+5.4. 
+ PAGEREF _Toc22499 \h 
+ HYPERLINK \l _Toc19036 
+5.5. 
+ PAGEREF _Toc19036 \h 
+ HYPERLINK \l _Toc30306 
+5.6. 
+ PAGEREF _Toc30306 \h 
+ HYPERLINK \l _Toc8238 
+ PAGEREF _Toc8238 \h 
+ HYPERLINK \l _Toc12445 
+6.1. 
+ PAGEREF _Toc12445 \h 
+ HYPERLINK \l _Toc20362 
+6.2. 
+ PAGEREF _Toc20362 \h 
+ HYPERLINK \l _Toc21771 
+6.3. 
+ PAGEREF _Toc21771 \h 
+ HYPERLINK \l _Toc25823 
+ PAGEREF _Toc25823 \h 
+ HYPERLINK \l _Toc16074 
+7.1. 
+ PAGEREF _Toc16074 \h 
+ HYPERLINK \l _Toc5504 
+7.2. 
+ PAGEREF _Toc5504 \h 
+Time-Lapse Imaging, TLI
+16GB
+500G
+1920
+1080
+Windows10
+HCS-001
+D1-D7
+HCS-002
+HCS-003
+HCS-004
+HCS-005
+HCS-006
+HCS-007
+HCS-008
+HCS-009
+HCS-010
+HCS-011
+HCS-012
+HCS-013 
+tPNa
+HCS-014
+t2 - t8
+HCS-015 
+t2,t4,t8
+HCS-016 
+t2,t4,t8
+HCS-017 ICM
+HCS-018 TE
+HCS-019 
+500 
+ 500
+HCS-020 
+HCS-021 
+Mysql.Data.dll
+mysql
+minIo
+mysql5.7
+Navicat Premium 15
+A-Z,
+a-z,
+Navicat Premium 15
+1011
+1012
+1013
+1021
+1022
+1031
+1032
+1041
+5501
+1000
+ SOL 
+ MySQL 
+MySQL
+                                                      
+HCLH/WI-YF-081-QR01  
+                                                        
+HCLH/WI-YF-081-QR01  
+                                                        
+HCLH/WI-YF-081-QR01  
+PAGE  
+                                          
+ PAGE 
+ 11 
+                                          
+ PAGE 
+ 11 
+ Char
+L2Txt
+L1Txt
+Body Text 2
+ 2 + 
+Times New Roman
+ZapfHumnst BT
+Arial
+Arial
+Calibri
+Helvetica
+Arial
+Tahoma
+_GB2312
+Symbol
+user
+\(!),.:;?]}
+_Hlt104364192
+_Hlt104364193
+_Toc8764	_Toc11124	_Toc28886	_Toc15675
+_Toc859	_Toc27714
+_Toc2087	_Toc22363	_Toc19718
+_Toc7770	_Toc16083	_Toc23995
+_Toc1781
+_Toc9381	_Toc15854
+_Toc8118
+_Toc9059	_Toc18302
+_Toc3895
+_Toc6042
+_Toc113183602	_Toc11446	_Toc15300
+_Toc113183603
+_Toc113183604	_Toc22499
+_Toc113183608	_Toc19036	_Toc30306
+_Toc113421677
+_Toc113421678
+_Toc113421679
+_Toc8238	_Toc12445	_Toc20362	_Toc21771	_Toc25823	_Toc16074
+_Toc5504
+commondata
+<eyJoZGlkIjoiZTk3ZGZmMmEwNjk3Yjc4MWE5NGNmYjZjZjBjNDdiODEifQ==

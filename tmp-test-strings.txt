@@ -1,0 +1,242 @@
+Root Entry
+SummaryInformation
+DocumentSummaryInformation
+WordDocument
+Normal.dotm
+Microsoft Office Word
+WWW.YlmF.CoM
+KSOProductBuildVer
+2052-11.1.0.11875
+15221D16AC16407EA416FE2338EF72DE
+0Table
+Data
+WpsCustomData
+V1.0
+2021.12.10
+V1.1
+2022.03.18
+    
+ TOC \o "1-2" \u \t "
+ 3,3" 
+ PAGEREF _Toc45616955 \h 
+ PAGEREF _Toc45616956 \h 
+ PAGEREF _Toc45616957 \h 
+ PAGEREF _Toc45616958 \h 
+ PAGEREF _Toc45616959 \h 
+ PAGEREF _Toc45616960 \h 
+ PAGEREF _Toc45616961 \h 
+ PAGEREF _Toc45616962 \h 
+Test Case ID
+Manual Section         
+Test Case Title
+Test Category
+Pre-condition
+Procedure
+Input data                                                     
+Expected Result
+Remark      
+GN001
+TLS VIEWER
+TLS VIEWER
+GN002
+TLS VIEWER
+GN003
+TLS VIEWER
+GN004
+TLS VIEWER
+tPNa
+tPNf
+tPNa
+tPNf
+GN005
+TLS VIEWER
+GN009
+TLS VIEWER
+Test Case ID
+Manual Section         
+Test Case Title
+Test Category
+Pre-condition
+Procedure
+Input data                                                     
+Expected Result
+Remark      
+XN001
+XN002
+20kb
+30kb
+XN003
+20kb-30kb
+ 60s
+XN004
+20kb-30kb
+100s
+100s
+XN005
+20kb-30kb
+ 40s
+Test Case ID
+Manual Section         
+Test Case Title
+Test Category
+Pre-condition
+Procedure
+Input data                                                     
+Expected Result
+Remark      
+JR001
+windows10
+TLS VIEWER
+TLS VIEWER
+Test Case ID
+Manual Section         
+Test Case Title
+Test Category
+Pre-condition
+Procedure
+Input data                                                     
+Expected Result
+Remark      
+YY001
+TLS VIEWER
+YY002
+TLS VIEWER
+YY003
+TLS VIEWER
+YY004
+TLS VIEWER
+1234
+12345678912345678912345678912345
+aaa1234567
+YY005
+TLS VIEWER
+1234
+12345678912345678912345678912345
+aaa1234567
+YY006
+tpNa
+TLS VIEWER
+tpNa
+tpNa
+123456
+tpNa
+tpNa
+30.888
+Test Case ID
+Manual Section         
+Test Case Title
+Test Category
+Pre-condition
+Procedure
+Input data                                                     
+Expected Result
+Remark      
+KK001
+Navicat
+mysql
+Navicat
+Navicat
+test
+backup test
+KK002
+Navicat
+Navicat
+Navicat
+localhost_3306
+test
+test
+test
+KK003
+Test Case ID
+Manual Section         
+Test Case Title
+Test Category
+Pre-condition
+Procedure
+Input data                                                     
+Expected Result
+Remark      
+AQ001
+TLS VIEWER
+AQ002
+TLS VIEWER
+AQ003
+TLS VIEWER
+AQ004
+TLS VIEWER
+Test Case ID
+Manual Section         
+Test Case Title
+Test Category
+Pre-condition
+Procedure
+Input data                                                     
+Expected Result
+Remark      
+WH001
+WH002
+TLS VIEWER
+Test Case ID
+Manual Section         
+Test Case Title
+Test Category
+Pre-condition
+Procedure
+Input data                                              
+Expected Result
+Remark      
+YZ001
+win10
+win10
+mysql;
+mysql
+ 1 Char
+ 2 Char
+ 3 Char
+ 4 Char
+ 5 Char
+ 6 Char
+ 7 Char
+ 8 Char
+ 9 Char
+navicat;
+navicat
+minio
+cloudfilmsvr
+rabbitmq
+rabbitmq 
+HCLH/WI-YF-083-QR04  
+HCLH/WI-YF-083-QR04  
+PAGE  
+                        GDMDT-SZLAB-T0722-STP
+PAGE   \* MERGEFORMAT
+ Char
+ Char
+ Char
+	HTML 
+ Char
+ Char
+ Char
+ Char
+ Char
+ Char
+ Char1 Char Char Char
+ Para Char Char Char Char Char Char Char Char Char Char Char Char Char Char Char Char Char
+TOC 
+Times New Roman
+Cambria
+Calibri
+Courier New
+Arial
+Tahoma
+\(!),.:;?]}
+_Toc45616955
+_Toc45616956
+_Toc45616957
+_Toc45616958
+_Toc45616959
+_Toc45616960
+_Toc45616961
+_Toc45616962
+commondata
+<eyJoZGlkIjoiZTk3ZGZmMmEwNjk3Yjc4MWE5NGNmYjZjZjBjNDdiODEifQ==
